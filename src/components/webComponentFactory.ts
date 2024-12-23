@@ -2,6 +2,7 @@ export class WebComponentFactory extends HTMLElement {
   static observedAttributes = [];
 
   connectedCallback(): void {
+    const defaultMode = this.getAttribute('#mode') || 'closed';
     for (const child of [...this.children]) {
       if (child.tagName !== 'WC') continue;
 
@@ -13,16 +14,16 @@ export class WebComponentFactory extends HTMLElement {
 
       customElements.define(
         name,
-        this._getWebComponent(child),
+        this._getWebComponent(child, defaultMode),
         extends_ ? { extends: extends_ } : undefined,
       );
     }
   }
 
-  private _getWebComponent = (element: Element): CustomElementConstructor => {
+  private _getWebComponent = (element: Element, defaultMode: string): CustomElementConstructor => {
     const templateHtml = element.innerHTML;
     const attributes = this._getAttributes(element);
-    const mode = (element.getAttribute('#mode') || 'closed').toLocaleLowerCase();
+    const mode = (element.getAttribute('#mode') || defaultMode).toLocaleLowerCase();
     if (!['open', 'closed'].includes(mode)) {
       throw new Error('"mode" attribute must be "open" or "closed"');
     }
