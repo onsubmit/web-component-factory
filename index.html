@@ -9,5 +9,26 @@
     <script type="module" src="/src/main.ts"></script>
 
     <h1>wc-factory</h1>
+    <wc-factory>
+      <wc
+        #name="my-button"
+        #mode="open"
+        text="Default value for button"
+        alert="Default value for alert"
+      >
+        <button onclick="alert('{alert}')">{text}</button>
+      </wc>
+      <wc #name="my-paragraph" text="Hello world">
+        <p>{text}</p>
+      </wc>
+      <wc #name="my-collection">
+        <my-paragraph text="My name is Andy!"></my-paragraph>
+        <my-paragraph text="It's nice to meet you."></my-paragraph>
+        <my-paragraph text="I hope you have a great day!"></my-paragraph>
+      </wc>
+    </wc-factory>
+    <my-paragraph id="p"></my-paragraph>
+    <my-button text="Click me!"></my-button>
+    <my-collection></my-collection>
   </body>
 </html>
