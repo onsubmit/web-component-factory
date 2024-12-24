@@ -7,7 +7,13 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "npm exec eslint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run src",
+    "test:coverage": "vitest run src --coverage",
+    "test:watch": "vitest src",
+    "test:watch:coverage": "vitest src --coverage",
+    "test:ui": "vitest --ui",
+    "test:ui:coverage": "vitest --ui --coverage"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
