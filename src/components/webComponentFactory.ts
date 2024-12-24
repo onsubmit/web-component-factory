@@ -11,7 +11,7 @@ export class WebComponentFactory extends HTMLElement {
       const name = child.getAttribute('#name');
       const extends_ = child.getAttribute('#extends');
       if (!name) {
-        throw new Error('"name" attribute is required');
+        throw new Error('"#name" attribute is required');
       }
 
       customElements.define(
