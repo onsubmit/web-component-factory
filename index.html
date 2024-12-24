@@ -17,6 +17,29 @@
         alert="Default value for alert"
       >
         <button onclick="alert('{alert}')">{text}</button>
+        <script type="lifecycle" callback="connected">
+          function connectedCallback() {
+            console.log('connectedCallback');
+          }
+        </script>
+        <script type="lifecycle" callback="disconnected">
+          function disconnectedCallback() {
+            console.log('disconnectedCallback');
+          }
+        </script>
+        <script type="lifecycle" callback="adopted">
+          function adoptedCallback() {
+            console.log('adoptedCallback');
+          }
+        </script>
+        <script type="lifecycle" callback="attributeChanged">
+          function attributeChangedCallback(name, oldValue, newValue) {
+            console.log('attributeChangedCallback');
+            console.debug('name:', name);
+            console.debug('oldValue:', oldValue);
+            console.debug('newValue:', newValue);
+          }
+        </script>
       </wc>
       <wc #name="my-paragraph" text="Hello world">
         <p>{text}</p>
@@ -30,5 +53,12 @@
     <my-paragraph id="p"></my-paragraph>
     <my-button text="Click me!"></my-button>
     <my-collection></my-collection>
+    <script>
+      setTimeout(() => {
+        const myButton = document.querySelector('my-button');
+        myButton.setAttribute('text', 'Cmon, click me!');
+        myButton.setAttribute('alert', 'Thank you for clicking me!');
+      }, 3000);
+    </script>
   </body>
 </html>

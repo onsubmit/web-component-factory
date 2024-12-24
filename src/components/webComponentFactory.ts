@@ -21,11 +21,43 @@ export class WebComponentFactory extends HTMLElement {
   }
 
   private _getWebComponent = (element: Element, defaultMode: string): CustomElementConstructor => {
+    const lifecycles: Map<string, string> = extractLifecycles();
+
     const templateHtml = element.innerHTML;
-    const attributes = this._getAttributes(element);
+    const attributes = getAttributes();
     const mode = (element.getAttribute('#mode') || defaultMode).toLocaleLowerCase();
     if (!['open', 'closed'].includes(mode)) {
       throw new Error('"mode" attribute must be "open" or "closed"');
+    }
+
+    function extractLifecycles(): Map<string, string> {
+      const map: Map<string, string> = new Map();
+      const lifecycleNames = ['connected', 'disconnected', 'adopted', 'attributeChanged'];
+
+      const scripts = element.querySelectorAll('script[type="lifecycle"]');
+      for (const script of scripts) {
+        const lifecycle = script.getAttribute('callback') || '';
+        if (!lifecycleNames.includes(lifecycle)) {
+          continue;
+        }
+
+        if (map.has(lifecycle)) {
+          throw new Error(`Lifecycle ${lifecycle} already defined`);
+        }
+
+        const funcStr = script.textContent || '';
+        map.set(lifecycle, funcStr);
+        element.removeChild(script);
+      }
+
+      return map;
+    }
+
+    function getAttributes(): Record<string, string> {
+      return [...element.attributes].reduce<Record<string, string>>((acc, attribute) => {
+        acc[attribute.name] = attribute.value;
+        return acc;
+      }, {});
     }
 
     return class extends HTMLElement {
@@ -50,10 +82,36 @@ export class WebComponentFactory extends HTMLElement {
       }
 
       connectedCallback(): void {
+        const callback = lifecycles.get('connected');
+        if (callback) {
+          eval(`${callback}\n;connectedCallback?.();`);
+        }
+
         this._connected = true;
       }
 
+      disconnectedCallback(): void {
+        const callback = lifecycles.get('disconnected');
+        if (callback) {
+          eval(`${callback}\n;disconnectedCallback?.();`);
+        }
+      }
+
+      adoptedCallback(): void {
+        const callback = lifecycles.get('adopted');
+        if (callback) {
+          eval(`${callback}\n;adoptedCallback?.();`);
+        }
+      }
+
       attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
+        const callback = lifecycles.get('attributeChanged');
+        if (callback) {
+          eval(
+            `${callback}\n;attributeChangedCallback?.('${name}', '${oldValue}', '${newValue}');`,
+          );
+        }
+
         if (!this._connected || oldValue === newValue) {
           return;
         }
@@ -73,10 +131,4 @@ export class WebComponentFactory extends HTMLElement {
       };
     };
   };
-
-  private _getAttributes = (element: Element): Record<string, string> =>
-    [...element.attributes].reduce<Record<string, string>>((acc, attribute) => {
-      acc[attribute.name] = attribute.value;
-      return acc;
-    }, {});
 }
