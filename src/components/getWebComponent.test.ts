@@ -14,7 +14,7 @@ describe('getWebComponent', () => {
     const ctor = getWebComponent(element, 'open');
     customElements.define('my-paragraph-1', ctor);
 
-    await fixture(html`<my-paragraph-1></my-paragraph>`);
+    await fixture(html`<my-paragraph-1></my-paragraph-1>`);
     await screen.findByShadowText('Hello world');
   });
 
@@ -28,7 +28,7 @@ describe('getWebComponent', () => {
     const ctor = getWebComponent(element, 'open');
     customElements.define('my-paragraph-2', ctor);
 
-    await fixture(html`<my-paragraph-2 text="Foo bar baz and so on"></my-paragraph>`);
+    await fixture(html`<my-paragraph-2 text="Foo bar baz and so on"></my-paragraph-2>`);
     await screen.findByShadowText('Foo bar baz and so on');
   });
 
@@ -58,7 +58,7 @@ describe('getWebComponent', () => {
     const ctor = getWebComponent(element, 'open');
     customElements.define('my-paragraph-3', ctor);
 
-    await fixture(html`<my-paragraph-3 text="How are you?"></my-paragraph>`);
+    await fixture(html`<my-paragraph-3 text="How are you?"></my-paragraph-3>`);
     await screen.findByShadowText('How are you?');
 
     expect(spy).toHaveBeenCalledTimes(5);
