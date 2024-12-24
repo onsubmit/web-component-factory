@@ -18,9 +18,9 @@ describe('getCustomElementConstructor', () => {
       mode,
     });
 
-    customElements.define('my-person', ctor);
+    customElements.define('my-person-1', ctor);
 
-    await fixture(html`<my-person></my-person>`);
+    await fixture(html`<my-person-1></my-person-1>`);
     await nextFrame();
     await screen.findByShadowText('Hi my name is Andy and I am 42 years old.');
   });
@@ -38,9 +38,9 @@ describe('getCustomElementConstructor', () => {
       mode,
     });
 
-    customElements.define('my-person', ctor);
+    customElements.define('my-person-2', ctor);
 
-    await fixture(html`<my-person name="George" age="38"></my-person>`);
+    await fixture(html`<my-person-2 name="George" age="38"></my-person-2>`);
     await nextFrame();
     await screen.findByShadowText('Hi my name is George and I am 38 years old.');
   });
@@ -80,9 +80,9 @@ describe('getCustomElementConstructor', () => {
       mode,
     });
 
-    customElements.define('my-person', ctor);
+    customElements.define('my-person-3', ctor);
 
-    await fixture(html`<my-person name="George"></my-person>`);
+    await fixture(html`<my-person-3 name="George"></my-person-3>`);
     await nextFrame();
 
     expect(spy).toHaveBeenCalledTimes(5);
@@ -106,9 +106,9 @@ describe('getCustomElementConstructor', () => {
       mode,
     });
 
-    customElements.define('my-person', ctor);
+    customElements.define('my-person-4', ctor);
 
-    await fixture(html`<my-person></my-person>`);
+    await fixture(html`<my-person-4></my-person-4>`);
     await nextFrame();
     const element = screen.queryByShadowText('Hi my name is Andy and I am 42 years old.');
     expect(element).toBeNull();
