@@ -11,7 +11,7 @@ function isShadowRootMode(mode: string): mode is ShadowRootMode {
 
 export function getShadowRootModeOrThrow(mode: string): ShadowRootMode {
   if (!isShadowRootMode(mode)) {
-    throw new Error('"mode" attribute must be "open" or "closed"');
+    throw new Error(`"mode" attribute must be "open" or "closed". Actual: "${mode}");`);
   }
 
   return mode;
