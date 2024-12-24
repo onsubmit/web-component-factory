@@ -1,21 +1,20 @@
-export function getWebComponent(element: Element, defaultMode: string): CustomElementConstructor {
-  const lifecycles: Map<string, string> = extractLifecycles();
+import { getShadowRootModeOrThrow, isLifecycle, LifecycleName } from '../utils/webComponents';
 
+export function getWebComponent(element: Element, defaultMode: string): CustomElementConstructor {
+  const lifecycles = extractLifecycles();
   const templateHtml = element.innerHTML;
   const attributes = getAttributes();
-  const mode = (element.getAttribute('#mode') || defaultMode).toLocaleLowerCase();
-  if (!['open', 'closed'].includes(mode)) {
-    throw new Error('"mode" attribute must be "open" or "closed"');
-  }
+  const mode = getShadowRootModeOrThrow(
+    (element.getAttribute('#mode') || defaultMode).toLocaleLowerCase(),
+  );
 
-  function extractLifecycles(): Map<string, string> {
-    const map: Map<string, string> = new Map();
-    const lifecycleNames = ['connected', 'disconnected', 'adopted', 'attributeChanged'];
+  function extractLifecycles(): Map<LifecycleName, string> {
+    const map = new Map<LifecycleName, string>();
 
     const scripts = element.querySelectorAll('script[type="lifecycle"]');
     for (const script of scripts) {
       const lifecycle = script.getAttribute('callback') || '';
-      if (!lifecycleNames.includes(lifecycle)) {
+      if (!isLifecycle(lifecycle)) {
         continue;
       }
 
@@ -55,50 +54,48 @@ export function getWebComponent(element: Element, defaultMode: string): CustomEl
         this._attributes[attribute.name] = attribute.value;
       }
 
-      this._shadowRoot = this.attachShadow({ mode: mode as ShadowRootMode });
-      this._shadowRoot.innerHTML = this.getInnerHtmlWithAttributes();
+      this._shadowRoot = this.attachShadow({ mode });
+      this._shadowRoot.innerHTML = this._getInnerHtmlWithAttributes();
     }
 
     connectedCallback(): void {
-      const callback = lifecycles.get('connected');
-      if (callback) {
-        eval(`${callback}\n;connectedCallback?.();`);
-      }
-
+      this._executeLifecycleCallback('connected');
       this._connected = true;
     }
 
     disconnectedCallback(): void {
-      const callback = lifecycles.get('disconnected');
-      if (callback) {
-        eval(`${callback}\n;disconnectedCallback?.();`);
-      }
+      this._executeLifecycleCallback('disconnected');
     }
 
     adoptedCallback(): void {
-      const callback = lifecycles.get('adopted');
-      if (callback) {
-        eval(`${callback}\n;adoptedCallback?.();`);
-      }
+      this._executeLifecycleCallback('adopted');
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-      const callback = lifecycles.get('attributeChanged');
-      if (callback) {
-        eval(`${callback}\n;attributeChangedCallback?.('${name}', '${oldValue}', '${newValue}');`);
-      }
+      this._executeLifecycleCallback(
+        'attributeChanged',
+        ...[name, oldValue, newValue].map((v) => `'${v}'`),
+      );
 
       if (!this._connected || oldValue === newValue) {
         return;
       }
 
       this._attributes[name] = newValue;
-      this._shadowRoot.innerHTML = this.getInnerHtmlWithAttributes();
+      this._shadowRoot.innerHTML = this._getInnerHtmlWithAttributes();
     }
 
-    getInnerHtmlWithAttributes = (): string => {
+    private _executeLifecycleCallback = (name: LifecycleName, ...args: any[]): void => {
+      const callback = lifecycles.get(name);
+      if (callback) {
+        eval(`${callback}\n;${name}Callback?.(${args.join(', ')});`);
+      }
+    };
+
+    private _getInnerHtmlWithAttributes = (): string => {
       const div = document.createElement('div');
       div.innerHTML = this._templateHtml;
+
       for (const [key, value] of Object.entries(this._attributes)) {
         div.innerHTML = div.innerHTML.replaceAll(`{${key}}`, value);
       }
