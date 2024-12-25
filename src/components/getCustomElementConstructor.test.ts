@@ -70,6 +70,7 @@ describe('getCustomElementConstructor', () => {
         `,
       ],
     ]);
+
     const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
 
@@ -82,7 +83,7 @@ describe('getCustomElementConstructor', () => {
 
     customElements.define('my-person-3', ctor);
 
-    await fixture(html`<my-person-3 name="George"></my-person-3>`);
+    const element = await fixture(html`<my-person-3 name="George"></my-person-3>`);
     await nextFrame();
 
     expect(spy).toHaveBeenCalledTimes(5);
@@ -91,6 +92,52 @@ describe('getCustomElementConstructor', () => {
     expect(spy).toHaveBeenNthCalledWith(3, 'oldValue: null');
     expect(spy).toHaveBeenNthCalledWith(4, 'newValue: George');
     expect(spy).toHaveBeenNthCalledWith(5, 'connectedCallback');
+
+    element.setAttribute('name', 'Fred');
+    expect(spy).toHaveBeenCalledTimes(9);
+    expect(spy).toHaveBeenNthCalledWith(6, 'attributeChangedCallback');
+    expect(spy).toHaveBeenNthCalledWith(7, 'name: name');
+    expect(spy).toHaveBeenNthCalledWith(8, 'oldValue: George');
+    expect(spy).toHaveBeenNthCalledWith(9, 'newValue: Fred');
+  });
+
+  it('should hook into the adopted lifecycle callback', async () => {
+    const spy = vi.spyOn(console, 'log');
+
+    const attributes = { name: 'Andy', age: '42' };
+    const lifecycles = new Map<LifecycleName, string>([
+      [
+        'adopted',
+        `
+          function adoptedCallback() {
+            console.log('adoptedCallback');
+          }
+        `,
+      ],
+    ]);
+
+    const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
+    const mode = 'open';
+
+    const ctor = getCustomElementConstructor({
+      attributes,
+      lifecycles,
+      templateHtml,
+      mode,
+    });
+
+    customElements.define('my-person-4', ctor);
+
+    const element = await fixture(html`<my-person-4 name="George"></my-person-4>`);
+    await nextFrame();
+
+    expect(spy).not.toHaveBeenCalled();
+    const iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    iframe.contentDocument?.body.appendChild(iframe.contentDocument.adoptNode(element));
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith('adoptedCallback');
   });
 
   it('should use a closed shadow root mode', async () => {
@@ -106,9 +153,9 @@ describe('getCustomElementConstructor', () => {
       mode,
     });
 
-    customElements.define('my-person-4', ctor);
+    customElements.define('my-person-5', ctor);
 
-    await fixture(html`<my-person-4></my-person-4>`);
+    await fixture(html`<my-person-5></my-person-5>`);
     await nextFrame();
     const element = screen.queryByShadowText('Hi my name is Andy and I am 42 years old.');
     expect(element).toBeNull();

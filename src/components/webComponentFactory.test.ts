@@ -1,7 +1,7 @@
 import { fixture, html } from '@open-wc/testing-helpers';
 import { screen } from 'shadow-dom-testing-library';
 
-import invariant from '../utils/invariant';
+import invariant from '../test/invariant';
 
 export type ErrorEventHandler = (this: Window, ev: ErrorEvent) => any;
 
