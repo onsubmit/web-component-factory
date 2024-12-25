@@ -6,19 +6,18 @@ export class WebComponentFactory extends HTMLElement {
   connectedCallback(): void {
     const defaultMode = this.getAttribute('#mode') || 'closed';
     for (const child of [...this.children]) {
-      if (child.tagName !== 'WC') continue;
+      if (child.tagName !== 'WC') {
+        this.removeChild(child);
+        continue;
+      }
 
       const name = child.getAttribute('#name');
-      const extends_ = child.getAttribute('#extends');
       if (!name) {
         throw new Error('"#name" attribute is required');
       }
 
-      customElements.define(
-        name,
-        getWebComponent(child, defaultMode),
-        extends_ ? { extends: extends_ } : undefined,
-      );
+      const customElementCtor = getWebComponent(child, defaultMode);
+      customElements.define(name, customElementCtor);
     }
   }
 }

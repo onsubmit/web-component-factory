@@ -8,6 +8,7 @@ export function getCustomElementConstructor(input: {
 }): CustomElementConstructor {
   const { attributes, lifecycles, templateHtml, mode } = input;
 
+  // TODO: Figure out extending other element types
   return class extends HTMLElement {
     static observedAttributes = [...Object.keys(attributes)];
 
