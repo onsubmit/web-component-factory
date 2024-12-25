@@ -40,7 +40,6 @@ describe('getWebComponent', () => {
         <p>{text}</p>
         <script type="lifecycle" callback="connected">
           function connectedCallback() {
-            debugger;
             console.log('connectedCallback');
           }
         </script>
@@ -82,5 +81,25 @@ describe('getWebComponent', () => {
     await fixture(html`<my-paragraph-4></my-paragraph-4>`);
     const p = screen.queryByShadowText('Hello world');
     expect(p).toBeNull();
+  });
+
+  it('should throw when an duplicate lifecycle is found', async () => {
+    const element = await fixture(html`
+      <wc #name="my-paragraph-5" text="Hello world">
+        <p>{text}</p>
+        <script type="lifecycle" callback="connected">
+          function connectedCallback() {
+            console.log('connectedCallback');
+          }
+        </script>
+        <script type="lifecycle" callback="connected">
+          function connectedCallback() {
+            console.log('connectedCallback');
+          }
+        </script>
+      </wc>
+    `);
+
+    expect(() => getWebComponent(element, 'open')).toThrow('Lifecycle "connected" already defined');
   });
 });

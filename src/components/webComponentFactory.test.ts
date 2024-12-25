@@ -1,7 +1,9 @@
 import { fixture, html } from '@open-wc/testing-helpers';
 import { screen } from 'shadow-dom-testing-library';
 
-import invariant from '../invariant';
+import invariant from '../utils/invariant';
+
+export type ErrorEventHandler = (this: Window, ev: ErrorEvent) => any;
 
 describe('WebComponentFactory', () => {
   it('should render a basic component', async () => {
@@ -99,7 +101,6 @@ describe('WebComponentFactory', () => {
   });
 
   it('should throw when #name attribute is missing', async () => {
-    type ErrorEventHandler = (this: Window, ev: ErrorEvent) => any;
     let errorEvent: ErrorEvent | undefined;
 
     const errorEventHandler: ErrorEventHandler = (event) => {

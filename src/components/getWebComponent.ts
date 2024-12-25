@@ -1,4 +1,8 @@
-import { getShadowRootModeOrThrow, isLifecycle, LifecycleName } from '../utils/webComponents';
+import {
+  getLifecycleNameOrThrow,
+  getShadowRootModeOrThrow,
+  LifecycleName,
+} from '../utils/webComponents';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
 
 export function getWebComponent(element: Element, defaultMode: string): CustomElementConstructor {
@@ -14,13 +18,9 @@ export function getWebComponent(element: Element, defaultMode: string): CustomEl
 
     const scripts = element.querySelectorAll('script[type="lifecycle"]');
     for (const script of scripts) {
-      const lifecycle = script.getAttribute('callback') || '';
-      if (!isLifecycle(lifecycle)) {
-        continue;
-      }
-
+      const lifecycle = getLifecycleNameOrThrow(script.getAttribute('callback') || '');
       if (map.has(lifecycle)) {
-        throw new Error(`Lifecycle ${lifecycle} already defined`);
+        throw new Error(`Lifecycle "${lifecycle}" already defined`);
       }
 
       const funcStr = script.textContent || '';

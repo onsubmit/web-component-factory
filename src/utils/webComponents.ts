@@ -1,12 +1,22 @@
 const lifecycleNames = ['connected', 'disconnected', 'adopted', 'attributeChanged'] as const;
 export type LifecycleName = (typeof lifecycleNames)[number];
 
-export function isLifecycle(name: string): name is LifecycleName {
+function isLifecycle(name: string): name is LifecycleName {
   return (lifecycleNames as unknown as Array<string>).includes(name);
 }
 
 function isShadowRootMode(mode: string): mode is ShadowRootMode {
   return mode === 'open' || mode === 'closed';
+}
+
+export function getLifecycleNameOrThrow(name: string): LifecycleName {
+  if (!isLifecycle(name)) {
+    throw new Error(
+      `"${name}" is not a valid lifecycle. Must be one of [${lifecycleNames.map((n) => `"${n}"`).join(', ')}]`,
+    );
+  }
+
+  return name;
 }
 
 export function getShadowRootModeOrThrow(mode: string): ShadowRootMode {

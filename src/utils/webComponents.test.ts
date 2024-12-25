@@ -1,17 +1,21 @@
-import { getShadowRootModeOrThrow, isLifecycle } from './webComponents';
+import { getLifecycleNameOrThrow, getShadowRootModeOrThrow } from './webComponents';
 
 describe('webComponents', () => {
-  describe('isLifecycle', () => {
+  describe('getLifecycleNameOrThrow', () => {
     it('should classify a valid lifecycle name', () => {
-      expect(isLifecycle('connected')).toBe(true);
-      expect(isLifecycle('disconnected')).toBe(true);
-      expect(isLifecycle('adopted')).toBe(true);
-      expect(isLifecycle('attributeChanged')).toBe(true);
+      expect(getLifecycleNameOrThrow('connected')).toBe('connected');
+      expect(getLifecycleNameOrThrow('disconnected')).toBe('disconnected');
+      expect(getLifecycleNameOrThrow('adopted')).toBe('adopted');
+      expect(getLifecycleNameOrThrow('attributeChanged')).toBe('attributeChanged');
     });
 
     it('should classify an invalid lifecycle name', () => {
-      expect(isLifecycle('')).toBe(false);
-      expect(isLifecycle('invalid')).toBe(false);
+      expect(() => getLifecycleNameOrThrow('')).toThrow(
+        '"" is not a valid lifecycle. Must be one of ["connected", "disconnected", "adopted", "attributeChanged"]',
+      );
+      expect(() => getLifecycleNameOrThrow('invalid')).toThrow(
+        '"invalid" is not a valid lifecycle. Must be one of ["connected", "disconnected", "adopted", "attributeChanged"]',
+      );
     });
   });
 
