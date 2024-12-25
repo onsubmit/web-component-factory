@@ -1,7 +1,14 @@
 import { getWebComponent } from './getWebComponent';
 
+export type ChildComponent = {
+  constructor: CustomElementConstructor;
+  mode: ShadowRootMode;
+};
+
 export class WebComponentFactory extends HTMLElement {
   static observedAttributes = [];
+
+  private _components = new Map<string, ChildComponent>();
 
   connectedCallback(): void {
     const defaultMode = this.getAttribute('#mode') || 'closed';
@@ -16,8 +23,15 @@ export class WebComponentFactory extends HTMLElement {
         throw new Error('"#name" attribute is required');
       }
 
-      const customElementCtor = getWebComponent(child, defaultMode);
-      customElements.define(name, customElementCtor);
+      if (this._components.has(name)) {
+        throw new Error(`Duplicate definition found for "${name}"`);
+      }
+
+      const component = getWebComponent(child, defaultMode);
+      this._components.set(name, component);
+      customElements.define(name, component.constructor);
     }
   }
+
+  getChildComponent = (name: string): ChildComponent | undefined => this._components.get(name);
 }

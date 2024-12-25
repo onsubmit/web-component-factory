@@ -4,14 +4,19 @@ import {
   LifecycleName,
 } from '../utils/webComponents';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
+import { ChildComponent } from './webComponentFactory';
 
-export function getWebComponent(element: Element, defaultMode: string): CustomElementConstructor {
-  return getCustomElementConstructor({
-    lifecycles: extractLifecycles(),
-    attributes: getAttributes(),
-    templateHtml: getTemplateHtml(),
-    mode: getShadowRootMode(),
-  });
+export function getWebComponent(element: Element, defaultMode: string): ChildComponent {
+  const mode = getShadowRootMode();
+  return {
+    constructor: getCustomElementConstructor({
+      lifecycles: extractLifecycles(),
+      attributes: getAttributes(),
+      templateHtml: getTemplateHtml(),
+      mode,
+    }),
+    mode,
+  };
 
   function extractLifecycles(): Map<LifecycleName, string> {
     const map = new Map<LifecycleName, string>();

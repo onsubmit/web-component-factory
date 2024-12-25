@@ -14,7 +14,6 @@ export function getCustomElementConstructor(input: {
 
     private _shadowRoot: ShadowRoot;
     private _templateHtml: string;
-    private _connected = false;
     private _attributes = { ...attributes };
 
     constructor() {
@@ -32,7 +31,6 @@ export function getCustomElementConstructor(input: {
 
     connectedCallback(): void {
       this._executeLifecycleCallback('connected');
-      this._connected = true;
     }
 
     disconnectedCallback(): void {
@@ -49,7 +47,7 @@ export function getCustomElementConstructor(input: {
         ...[name, oldValue, newValue].map((v) => `'${v}'`),
       );
 
-      if (!this._connected || oldValue === newValue) {
+      if (oldValue === newValue) {
         return;
       }
 

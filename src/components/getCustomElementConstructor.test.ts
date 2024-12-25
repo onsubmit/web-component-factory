@@ -93,12 +93,14 @@ describe('getCustomElementConstructor', () => {
     expect(spy).toHaveBeenNthCalledWith(4, 'newValue: George');
     expect(spy).toHaveBeenNthCalledWith(5, 'connectedCallback');
 
-    element.setAttribute('name', 'Fred');
+    // Set value to the same oldValue.
+    // The attributeChangedCallback should still fire but the HTML won't update.
+    element.setAttribute('name', 'George');
     expect(spy).toHaveBeenCalledTimes(9);
     expect(spy).toHaveBeenNthCalledWith(6, 'attributeChangedCallback');
     expect(spy).toHaveBeenNthCalledWith(7, 'name: name');
     expect(spy).toHaveBeenNthCalledWith(8, 'oldValue: George');
-    expect(spy).toHaveBeenNthCalledWith(9, 'newValue: Fred');
+    expect(spy).toHaveBeenNthCalledWith(9, 'newValue: George');
   });
 
   it('should hook into the adopted lifecycle callback', async () => {

@@ -11,8 +11,8 @@ describe('getWebComponent', () => {
       </wc>
     `);
 
-    const ctor = getWebComponent(element, 'open');
-    customElements.define('my-paragraph-1', ctor);
+    const { constructor } = getWebComponent(element, 'open');
+    customElements.define('my-paragraph-1', constructor);
 
     await fixture(html`<my-paragraph-1></my-paragraph-1>`);
     await screen.findByShadowText('Hello world');
@@ -25,8 +25,8 @@ describe('getWebComponent', () => {
       </wc>
     `);
 
-    const ctor = getWebComponent(element, 'open');
-    customElements.define('my-paragraph-2', ctor);
+    const { constructor } = getWebComponent(element, 'open');
+    customElements.define('my-paragraph-2', constructor);
 
     await fixture(html`<my-paragraph-2 text="Foo bar baz and so on"></my-paragraph-2>`);
     await screen.findByShadowText('Foo bar baz and so on');
@@ -54,8 +54,8 @@ describe('getWebComponent', () => {
       </wc>
     `);
 
-    const ctor = getWebComponent(element, 'open');
-    customElements.define('my-paragraph-3', ctor);
+    const { constructor } = getWebComponent(element, 'open');
+    customElements.define('my-paragraph-3', constructor);
 
     await fixture(html`<my-paragraph-3 text="How are you?"></my-paragraph-3>`);
     await screen.findByShadowText('How are you?');
@@ -75,8 +75,8 @@ describe('getWebComponent', () => {
       </wc>
     `);
 
-    const ctor = getWebComponent(element, 'closed');
-    customElements.define('my-paragraph-4', ctor);
+    const { constructor } = getWebComponent(element, 'closed');
+    customElements.define('my-paragraph-4', constructor);
 
     await fixture(html`<my-paragraph-4></my-paragraph-4>`);
     const p = screen.queryByShadowText('Hello world');

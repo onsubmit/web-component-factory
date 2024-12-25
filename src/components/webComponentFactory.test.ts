@@ -2,6 +2,7 @@ import { fixture, html } from '@open-wc/testing-helpers';
 import { screen } from 'shadow-dom-testing-library';
 
 import invariant from '../test/invariant';
+import { WebComponentFactory } from './webComponentFactory';
 
 export type ErrorEventHandler = (this: Window, ev: ErrorEvent) => any;
 
@@ -125,5 +126,62 @@ describe('WebComponentFactory', () => {
     expect(errorEvent.message).toBe('"#name" attribute is required');
 
     window.removeEventListener('error', obj.errorEventHandler);
+  });
+
+  it('should throw when duplicate child component definitions exist', async () => {
+    let errorEvent: ErrorEvent | undefined;
+
+    const errorEventHandler: ErrorEventHandler = (event) => {
+      event.preventDefault();
+      errorEvent = event;
+    };
+
+    const obj = { errorEventHandler };
+    const spy = vi.spyOn(obj, 'errorEventHandler');
+    window.addEventListener('error', obj.errorEventHandler);
+
+    await fixture(html`
+      <wc-factory #mode="closed">
+        <wc #name="my-paragraph-6" text="Hello world">
+          <p>{text}</p>
+        </wc>
+        <wc #name="my-paragraph-6" text="Good morning">
+          <p>{text}</p>
+        </wc>
+      </wc-factory>
+    `);
+
+    expect(spy).toHaveBeenCalled();
+    invariant(errorEvent);
+    expect(errorEvent.message).toBe('Duplicate definition found for "my-paragraph-6"');
+
+    window.removeEventListener('error', obj.errorEventHandler);
+  });
+
+  it('should expose the child component constructors', async () => {
+    await fixture(html`
+      <wc-factory #mode="open">
+        <wc #name="my-paragraph-7" text="Hello world">
+          <p>{text}</p>
+        </wc>
+      </wc-factory>
+    `);
+
+    await fixture(html`<my-paragraph-7></my-paragraph-7>`);
+    await screen.findByShadowText('Hello world');
+
+    const factory = document.querySelector<WebComponentFactory>('wc-factory');
+    invariant(factory);
+
+    const component = factory.getChildComponent('my-paragraph-7');
+    invariant(component);
+
+    expect(component.mode).toBe('open');
+
+    const paragraph = new component.constructor();
+    paragraph.setAttribute('text', 'Merry Christmas!');
+    document.body.appendChild(paragraph);
+
+    await screen.findByShadowText('Merry Christmas!');
   });
 });
