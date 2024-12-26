@@ -190,15 +190,45 @@ describe('WebComponentFactory', () => {
   describe('programmatic', () => {
     it('should render a basic component', async () => {
       new WebComponentFactory()
-        .getComponentBuilder('my-span')
+        .getComponentBuilder('my-span-1')
         .setMode('open')
-        .setAttribute('text', 'Hello World!')
+        .setAttributes({ text: 'Hello World!' })
         .setLifecycleCallback('connected', () => console.log('connectedCallback'))
         .setTemplate('<span>{text}</span>')
         .build();
 
-      await fixture(html`<my-span></my-span>`);
+      await fixture(html`<my-span-1></my-span-1>`);
       await screen.findByShadowText('Hello World!');
+    });
+
+    it('should render a basic component with an element template', async () => {
+      const template = document.createElement('span');
+      template.textContent = '{text}';
+
+      new WebComponentFactory()
+        .getComponentBuilder('my-span-2')
+        .setMode('open')
+        .setAttributes({ text: 'Hello World!' })
+        .setLifecycleCallback('connected', () => console.log('connectedCallback'))
+        .setTemplate(template)
+        .build();
+
+      await fixture(html`<my-span-2></my-span-2>`);
+      await screen.findByShadowText('Hello World!');
+    });
+
+    it('should throw if an empty name is provided', () => {
+      expect(() => new WebComponentFactory().getComponentBuilder('')).toThrow(
+        'A non-empty "name" is required',
+      );
+    });
+
+    it('should throw if a duplicate component is found', () => {
+      const factory = new WebComponentFactory();
+      factory.getComponentBuilder('my-span-3').build();
+      expect(() => factory.getComponentBuilder('my-span-3')).toThrow(
+        'Component "my-span-3" already exists',
+      );
     });
   });
 });

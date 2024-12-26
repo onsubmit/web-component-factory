@@ -1,22 +1,28 @@
+import { componentRegistry } from '../componentRegistry';
 import {
   getLifecycleNameOrThrow,
   getShadowRootModeOrThrow,
   LifecycleSignatures as LifecycleCallbacks,
 } from '../utils/webComponents';
-import { getCustomElementConstructor } from './getCustomElementConstructor';
+import { CustomComponentBuilder } from './customComponentBuilder';
 import { Component } from './webComponentFactory';
 
 export function getWebComponent(element: Element, defaultMode: string): Component {
-  const mode = getShadowRootMode();
-  return {
-    constructor: getCustomElementConstructor({
-      lifecycles: extractLifecycles(),
-      attributes: getAttributes(),
-      templateHtml: getTemplateHtml(),
-      mode,
-    }),
-    mode,
-  };
+  const name = element.getAttribute('#name');
+  if (!name) {
+    throw new Error('"#name" attribute is required');
+  }
+
+  if (componentRegistry.has(name)) {
+    throw new Error(`Duplicate definition found for "${name}"`);
+  }
+
+  return new CustomComponentBuilder(name)
+    .setMode(getShadowRootMode())
+    .setLifecycleCallbacks(extractLifecycles())
+    .setAttributes(getAttributes())
+    .setTemplate(getTemplateHtml())
+    .build();
 
   function extractLifecycles(): Partial<LifecycleCallbacks> {
     const callbacks: Partial<LifecycleCallbacks> = {};

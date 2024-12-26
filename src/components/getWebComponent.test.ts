@@ -11,8 +11,7 @@ describe('getWebComponent', () => {
       </wc>
     `);
 
-    const { constructor } = getWebComponent(element, 'open');
-    customElements.define('my-paragraph-1', constructor);
+    getWebComponent(element, 'open');
 
     await fixture(html`<my-paragraph-1></my-paragraph-1>`);
     await screen.findByShadowText('Hello world');
@@ -25,8 +24,7 @@ describe('getWebComponent', () => {
       </wc>
     `);
 
-    const { constructor } = getWebComponent(element, 'open');
-    customElements.define('my-paragraph-2', constructor);
+    getWebComponent(element, 'open');
 
     await fixture(html`<my-paragraph-2 text="Foo bar baz and so on"></my-paragraph-2>`);
     await screen.findByShadowText('Foo bar baz and so on');
@@ -54,8 +52,7 @@ describe('getWebComponent', () => {
       </wc>
     `);
 
-    const { constructor } = getWebComponent(element, 'open');
-    customElements.define('my-paragraph-3', constructor);
+    getWebComponent(element, 'open');
 
     await fixture(html`<my-paragraph-3 text="How are you?"></my-paragraph-3>`);
     await screen.findByShadowText('How are you?');
@@ -75,8 +72,7 @@ describe('getWebComponent', () => {
       </wc>
     `);
 
-    const { constructor } = getWebComponent(element, 'closed');
-    customElements.define('my-paragraph-4', constructor);
+    getWebComponent(element, 'closed');
 
     await fixture(html`<my-paragraph-4></my-paragraph-4>`);
     const p = screen.queryByShadowText('Hello world');

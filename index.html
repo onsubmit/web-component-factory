@@ -61,5 +61,16 @@
         myButton.setAttribute('alert', 'Thank you for clicking me!');
       }, 3000);
     </script>
+    <script type="module">
+      import { WebComponentFactory } from '/src/index.ts';
+
+      new WebComponentFactory()
+        .getComponentBuilder('welcome-message')
+        .setMode('open')
+        .setAttribute('text', 'Default message')
+        .setLifecycleCallback('connected', () => console.log('👋'))
+        .setTemplate('<span>{text}</span>')
+        .build();
+    </script>
   </body>
 </html>

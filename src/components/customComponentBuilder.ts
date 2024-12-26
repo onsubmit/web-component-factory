@@ -1,4 +1,4 @@
-import { registerComponent } from '../componentRegistry';
+import { componentRegistry } from '../componentRegistry';
 import { LifecycleName, LifecycleSignature, LifecycleSignatures } from '../utils/webComponents';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
 import { Component } from './webComponentFactory';
@@ -30,7 +30,7 @@ export class CustomComponentBuilder {
 
   setAttributes = (attributes: Record<string, string>): this => {
     for (const [name, value] of Object.entries(attributes)) {
-      this._attributes.set(name, value);
+      this.setAttribute(name, value);
     }
 
     return this;
@@ -52,6 +52,11 @@ export class CustomComponentBuilder {
     return this;
   };
 
+  setLifecycleCallbacks = (callbacks: Partial<LifecycleSignatures>): this => {
+    this._lifecycles = callbacks;
+    return this;
+  };
+
   build = (): Component => {
     const component = {
       constructor: getCustomElementConstructor({
@@ -63,7 +68,9 @@ export class CustomComponentBuilder {
       mode: this._mode,
     };
 
-    registerComponent(this._name, component);
+    componentRegistry.set(this._name, component);
+    customElements.define(this._name, component.constructor);
+
     return component;
   };
 }

@@ -1,4 +1,4 @@
-import { componentRegistry, registerComponent } from '../componentRegistry';
+import { componentRegistry } from '../componentRegistry';
 import { getShadowRootModeOrThrow } from '../utils/webComponents';
 import { CustomComponentBuilder } from './customComponentBuilder';
 import { getWebComponent } from './getWebComponent';
@@ -15,10 +15,6 @@ export class WebComponentFactory extends HTMLElement {
     return getShadowRootModeOrThrow(this.getAttribute('#mode') || 'closed');
   }
 
-  set mode(value: string) {
-    this.setAttribute('#mode', value ? getShadowRootModeOrThrow(value) : 'closed');
-  }
-
   connectedCallback(): void {
     for (const child of [...this.children]) {
       if (child.tagName !== 'WC') {
@@ -26,17 +22,7 @@ export class WebComponentFactory extends HTMLElement {
         continue;
       }
 
-      const name = child.getAttribute('#name');
-      if (!name) {
-        throw new Error('"#name" attribute is required');
-      }
-
-      if (componentRegistry.has(name)) {
-        throw new Error(`Duplicate definition found for "${name}"`);
-      }
-
-      const component = getWebComponent(child, this.mode);
-      registerComponent(name, component);
+      getWebComponent(child, this.mode);
     }
   }
 
@@ -48,7 +34,7 @@ export class WebComponentFactory extends HTMLElement {
     }
 
     if (componentRegistry.has(name)) {
-      throw new Error(`Child component "${name} already exists"`);
+      throw new Error(`Component "${name}" already exists`);
     }
 
     return new CustomComponentBuilder(name);
