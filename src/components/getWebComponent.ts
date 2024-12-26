@@ -44,8 +44,7 @@ export function getWebComponent(input: {
 
       if (lifecycle === 'attributeChanged') {
         callbacks.attributeChanged = (name: string, oldValue: string, newValue: string): void => {
-          // TODO: This barfs when any of the arguments contains a single quote.
-          const funcStrWithArgs = `${funcStr}\n;attributeChangedCallback?.('${name}', '${oldValue}', '${newValue}');`;
+          const funcStrWithArgs = `${funcStr}\n;attributeChangedCallback?.(${[name, oldValue, newValue].map((v) => JSON.stringify(v)).join(', ')});`;
           eval(funcStrWithArgs);
         };
       } else {

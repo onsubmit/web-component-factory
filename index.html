@@ -86,7 +86,10 @@
       setTimeout(() => {
         const myButton = document.querySelector('my-button');
         myButton.setAttribute('alert', 'Thank you for clicking me!');
-        myButton.setAttribute('text', 'Cmon, click me for an alert that says "{alert}"!');
+        myButton.setAttribute(
+          'text',
+          "C'mon, click me for an alert that says &quot;{alert}&quot;!",
+        );
       }, 3000);
     </script>
     <script type="module">
