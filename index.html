@@ -62,12 +62,16 @@
       <web-component #name="my-paragraph" text="Hello world">
         <p>{text} & {overrideable-text}</p>
       </web-component>
-      <web-component #name="my-collection">
+      <web-component #name="my-collection" collection-attr="I'm part of a collection">
         <my-paragraph text="My name is Andy!"></my-paragraph>
         <my-paragraph text="It's nice to meet you."></my-paragraph>
         <my-paragraph
           text="I hope you have a great day!"
           overrideable-text="I'm overwritten text!"
+        ></my-paragraph>
+        <my-paragraph
+          text="{collection-attr}"
+          overrideable-text="I can also override text!"
         ></my-paragraph>
       </web-component>
     </wc-factory>
