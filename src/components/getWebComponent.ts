@@ -2,7 +2,7 @@ import { componentRegistry } from '../componentRegistry';
 import {
   getLifecycleNameOrThrow,
   getShadowRootModeOrThrow,
-  LifecycleSignatures as LifecycleCallbacks,
+  LifecycleCallbacks,
 } from '../utils/webComponents';
 import { CustomComponentBuilder } from './customComponentBuilder';
 import { Component } from './webComponentFactory';

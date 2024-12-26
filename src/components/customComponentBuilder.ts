@@ -1,5 +1,5 @@
 import { componentRegistry } from '../componentRegistry';
-import { LifecycleName, LifecycleSignature, LifecycleSignatures } from '../utils/webComponents';
+import { LifecycleCallback, LifecycleCallbacks, LifecycleName } from '../utils/webComponents';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
 import { Component } from './webComponentFactory';
 
@@ -8,7 +8,7 @@ export class CustomComponentBuilder {
   private _mode: ShadowRootMode;
   private _templateHtml: string;
   private _attributes: Map<string, string>;
-  private _lifecycles: Partial<LifecycleSignatures>;
+  private _lifecycles: Partial<LifecycleCallbacks>;
 
   constructor(name: string) {
     this._name = name;
@@ -46,13 +46,13 @@ export class CustomComponentBuilder {
 
   setLifecycleCallback = <T extends LifecycleName>(
     name: T,
-    callback: LifecycleSignature<T>,
+    callback: LifecycleCallback<T>,
   ): this => {
-    this._lifecycles[name] = callback as LifecycleSignatures[T];
+    this._lifecycles[name] = callback as LifecycleCallbacks[T];
     return this;
   };
 
-  setLifecycleCallbacks = (callbacks: Partial<LifecycleSignatures>): this => {
+  setLifecycleCallbacks = (callbacks: Partial<LifecycleCallbacks>): this => {
     this._lifecycles = callbacks;
     return this;
   };

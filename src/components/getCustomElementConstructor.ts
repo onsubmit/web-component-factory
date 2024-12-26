@@ -1,8 +1,8 @@
-import { LifecycleSignatures } from '../utils/webComponents';
+import { LifecycleCallbacks } from '../utils/webComponents';
 
 export function getCustomElementConstructor(input: {
   attributes: Record<string, string>;
-  lifecycles: Partial<LifecycleSignatures>;
+  lifecycles: Partial<LifecycleCallbacks>;
   templateHtml: string;
   mode: ShadowRootMode;
 }): CustomElementConstructor {
