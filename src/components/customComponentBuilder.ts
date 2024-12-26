@@ -6,7 +6,7 @@ import { Component } from './webComponentFactory';
 export class CustomComponentBuilder {
   private _name: string;
   private _mode: ShadowRootMode;
-  private _template: Element | undefined;
+  private _child: Element | undefined;
   private _attributes: Map<string, string>;
   private _lifecycles: Partial<LifecycleCallbacks>;
 
@@ -35,8 +35,8 @@ export class CustomComponentBuilder {
     return this;
   };
 
-  setTemplateElement = (element: Element | undefined): this => {
-    this._template = element;
+  setChildElement = (child: Element | undefined): this => {
+    this._child = child;
     return this;
   };
 
@@ -54,11 +54,11 @@ export class CustomComponentBuilder {
   };
 
   addTemplate = (template: HTMLTemplateElement): this => {
-    if (!this._template) {
-      throw new Error('Base template element not set. Call "setTemplateElement" first.');
+    if (!this._child) {
+      throw new Error('Child element not set. Call "setChildElement" first.');
     }
 
-    this._template.parentElement?.appendChild(template);
+    this._child.parentElement?.appendChild(template);
     return this;
   };
 
@@ -67,7 +67,7 @@ export class CustomComponentBuilder {
       constructor: getCustomElementConstructor({
         lifecycles: this._lifecycles,
         attributes: Object.fromEntries(this._attributes),
-        template: this._template,
+        template: this._child,
         mode: this._mode,
       }),
       mode: this._mode,

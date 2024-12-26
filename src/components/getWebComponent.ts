@@ -21,7 +21,7 @@ export function getWebComponent(element: Element, defaultMode: string): Componen
     .setMode(getShadowRootMode())
     .setLifecycleCallbacks(extractLifecycles())
     .setAttributes(getAttributes())
-    .setTemplateElement(getTemplate())
+    .setChildElement(getTemplate())
     .build();
 
   function extractLifecycles(): Partial<LifecycleCallbacks> {

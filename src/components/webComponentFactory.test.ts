@@ -255,7 +255,7 @@ describe('WebComponentFactory', () => {
         .setMode('open')
         .setAttributes({ text: 'Hello World!' })
         .setLifecycleCallback('connected', () => console.log('connectedCallback'))
-        .setTemplateElement(template)
+        .setChildElement(template)
         .build();
 
       await fixture(html`<my-span-2></my-span-2>`);
