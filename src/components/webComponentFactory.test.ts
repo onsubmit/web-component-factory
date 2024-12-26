@@ -34,12 +34,25 @@ describe('WebComponentFactory', () => {
       await screen.findByShadowText('Foo bar baz and so on');
     });
 
+    it('should reference global attributes', async () => {
+      await fixture(html`
+        <wc-factory #mode="open" text-a="A" text-b="B" text-c="{text-a}{text-b}">
+          <web-component #name="my-paragraph-3">
+            <p>{text-a} + {text-b} = {text-c}</p>
+          </web-component>
+        </wc-factory>
+      `);
+
+      await fixture(html`<my-paragraph-3></my-paragraph-3>`);
+      await screen.findByShadowText('A + B = AB');
+    });
+
     it('should hook into lifecycle callbacks', async () => {
       const spy = vi.spyOn(console, 'log');
 
       await fixture(html`
         <wc-factory #mode="open">
-          <web-component #name="my-paragraph-3" text="Hello world">
+          <web-component #name="my-paragraph-4" text="Hello world">
             <p>{text}</p>
             <script type="lifecycle" callback="connected">
               function connectedCallback() {
@@ -59,7 +72,7 @@ describe('WebComponentFactory', () => {
         </wc-factory>
       `);
 
-      await fixture(html`<my-paragraph-3 text="How are you?"></my-paragraph-3>`);
+      await fixture(html`<my-paragraph-4 text="How are you?"></my-paragraph-4>`);
       await screen.findByShadowText('How are you?');
 
       expect(spy).toHaveBeenCalledTimes(5);
@@ -74,13 +87,13 @@ describe('WebComponentFactory', () => {
       // wc-factory defaults to "closed"
       await fixture(html`
         <wc-factory>
-          <web-component #name="my-paragraph-4" text="Hello world">
+          <web-component #name="my-paragraph-5" text="Hello world">
             <p>{text}</p>
           </web-component>
         </wc-factory>
       `);
 
-      await fixture(html`<my-paragraph-4></my-paragraph-4>`);
+      await fixture(html`<my-paragraph-5></my-paragraph-5>`);
       const p = screen.queryByShadowText('Hello world');
       expect(p).toBeNull();
     });
@@ -88,14 +101,14 @@ describe('WebComponentFactory', () => {
     it('ignores children other than <web-component> tags', async () => {
       await fixture(html`
         <wc-factory #mode="open">
-          <web-component #name="my-paragraph-5" text="Hello world">
+          <web-component #name="my-paragraph-6" text="Hello world">
             <p>{text}</p>
           </web-component>
           <b>I'm ignored</b>
         </wc-factory>
       `);
 
-      await fixture(html`<my-paragraph-5></my-paragraph-5>`);
+      await fixture(html`<my-paragraph-6></my-paragraph-6>`);
       await screen.findByShadowText('Hello world');
 
       const b = screen.queryByText("I'm ignored");
@@ -143,10 +156,10 @@ describe('WebComponentFactory', () => {
 
       await fixture(html`
         <wc-factory #mode="closed">
-          <web-component #name="my-paragraph-6" text="Hello world">
+          <web-component #name="my-paragraph-7" text="Hello world">
             <p>{text}</p>
           </web-component>
-          <web-component #name="my-paragraph-6" text="Good morning">
+          <web-component #name="my-paragraph-7" text="Good morning">
             <p>{text}</p>
           </web-component>
         </wc-factory>
@@ -154,7 +167,7 @@ describe('WebComponentFactory', () => {
 
       expect(spy).toHaveBeenCalled();
       invariant(errorEvent);
-      expect(errorEvent.message).toBe('Duplicate definition found for "my-paragraph-6"');
+      expect(errorEvent.message).toBe('Duplicate definition found for "my-paragraph-7"');
 
       window.removeEventListener('error', obj.errorEventHandler);
     });
@@ -162,19 +175,19 @@ describe('WebComponentFactory', () => {
     it('should expose the child component constructors', async () => {
       await fixture(html`
         <wc-factory #mode="open">
-          <web-component #name="my-paragraph-7" text="Hello world">
+          <web-component #name="my-paragraph-8" text="Hello world">
             <p>{text}</p>
           </web-component>
         </wc-factory>
       `);
 
-      await fixture(html`<my-paragraph-7></my-paragraph-7>`);
+      await fixture(html`<my-paragraph-8></my-paragraph-8>`);
       await screen.findByShadowText('Hello world');
 
       const factory = document.querySelector<WebComponentFactory>('wc-factory');
       invariant(factory);
 
-      const component = factory.getComponent('my-paragraph-7');
+      const component = factory.getComponent('my-paragraph-8');
       invariant(component);
 
       expect(component.mode).toBe('open');
