@@ -1,6 +1,14 @@
 const lifecycleNames = ['connected', 'disconnected', 'adopted', 'attributeChanged'] as const;
 export type LifecycleName = (typeof lifecycleNames)[number];
 
+export type LifecycleSignature<T extends LifecycleName> = T extends 'attributeChanged'
+  ? (name: string, oldValue: string, newValue: string) => void
+  : () => void;
+
+export type LifecycleSignatures = {
+  [TName in LifecycleName]: LifecycleSignature<TName>;
+};
+
 function isLifecycle(name: string): name is LifecycleName {
   return (lifecycleNames as unknown as Array<string>).includes(name);
 }

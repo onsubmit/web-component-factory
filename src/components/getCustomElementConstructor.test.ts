@@ -1,13 +1,12 @@
 import { fixture, html, nextFrame } from '@open-wc/testing-helpers';
 import { screen } from 'shadow-dom-testing-library';
 
-import { LifecycleName } from '../utils/webComponents';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
 
 describe('getCustomElementConstructor', () => {
   it('should render a basic component', async () => {
     const attributes = { name: 'Andy', age: '42' };
-    const lifecycles = new Map<LifecycleName, string>();
+    const lifecycles = {};
     const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
 
@@ -27,7 +26,7 @@ describe('getCustomElementConstructor', () => {
 
   it('should override attributes', async () => {
     const attributes = { name: 'Andy', age: '42' };
-    const lifecycles = new Map<LifecycleName, string>();
+    const lifecycles = {};
     const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
 
@@ -49,27 +48,22 @@ describe('getCustomElementConstructor', () => {
     const spy = vi.spyOn(console, 'log');
 
     const attributes = { name: 'Andy', age: '42' };
-    const lifecycles = new Map<LifecycleName, string>([
-      [
-        'connected',
-        `
-          function connectedCallback() {
-            console.log('connectedCallback');
-          }
-        `,
-      ],
-      [
-        'attributeChanged',
-        `
-          function attributeChangedCallback(name, oldValue, newValue) {
-            console.log('attributeChangedCallback');
-            console.log('name: ' + name);
-            console.log('oldValue: ' + oldValue);
-            console.log('newValue: ' + newValue);
-          }
-        `,
-      ],
-    ]);
+    const lifecycles = {
+      connected: function connectedCallback(): void {
+        console.log('connectedCallback');
+      },
+
+      attributeChanged: function attributeChangedCallback(
+        name: string,
+        oldValue: string,
+        newValue: string,
+      ): void {
+        console.log('attributeChangedCallback');
+        console.log('name: ' + name);
+        console.log('oldValue: ' + oldValue);
+        console.log('newValue: ' + newValue);
+      },
+    };
 
     const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
@@ -107,16 +101,11 @@ describe('getCustomElementConstructor', () => {
     const spy = vi.spyOn(console, 'log');
 
     const attributes = { name: 'Andy', age: '42' };
-    const lifecycles = new Map<LifecycleName, string>([
-      [
-        'adopted',
-        `
-          function adoptedCallback() {
-            console.log('adoptedCallback');
-          }
-        `,
-      ],
-    ]);
+    const lifecycles = {
+      adopted: function adoptedCallback(): void {
+        console.log('adoptedCallback');
+      },
+    };
 
     const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
@@ -144,7 +133,7 @@ describe('getCustomElementConstructor', () => {
 
   it('should use a closed shadow root mode', async () => {
     const attributes = { name: 'Andy', age: '42' };
-    const lifecycles = new Map<LifecycleName, string>();
+    const lifecycles = {};
     const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'closed';
 

@@ -1,8 +1,8 @@
-import { LifecycleName } from '../utils/webComponents';
+import { LifecycleSignatures } from '../utils/webComponents';
 
 export function getCustomElementConstructor(input: {
   attributes: Record<string, string>;
-  lifecycles: Map<LifecycleName, string>;
+  lifecycles: Partial<LifecycleSignatures>;
   templateHtml: string;
   mode: ShadowRootMode;
 }): CustomElementConstructor {
@@ -30,22 +30,19 @@ export function getCustomElementConstructor(input: {
     }
 
     connectedCallback(): void {
-      this._executeLifecycleCallback('connected');
+      lifecycles['connected']?.();
     }
 
     disconnectedCallback(): void {
-      this._executeLifecycleCallback('disconnected');
+      lifecycles['disconnected']?.();
     }
 
     adoptedCallback(): void {
-      this._executeLifecycleCallback('adopted');
+      lifecycles['adopted']?.();
     }
 
     attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-      this._executeLifecycleCallback(
-        'attributeChanged',
-        ...[name, oldValue, newValue].map((v) => `'${v}'`),
-      );
+      lifecycles['attributeChanged']?.(name, oldValue, newValue);
 
       if (oldValue === newValue) {
         return;
@@ -54,13 +51,6 @@ export function getCustomElementConstructor(input: {
       this._attributes[name] = newValue;
       this._shadowRoot.innerHTML = this._getInnerHtmlWithAttributes();
     }
-
-    private _executeLifecycleCallback = (name: LifecycleName, ...args: any[]): void => {
-      const callback = lifecycles.get(name);
-      if (callback) {
-        eval(`${callback}\n;${name}Callback?.(${args.join(', ')});`);
-      }
-    };
 
     private _getInnerHtmlWithAttributes = (): string => {
       const div = document.createElement('div');

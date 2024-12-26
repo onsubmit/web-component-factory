@@ -1,3 +1,6 @@
+import { childComponentRegistry, registerComponent } from '../childComponentRegistry';
+import { getShadowRootModeOrThrow } from '../utils/webComponents';
+import { CustomComponentBuilder } from './customComponentBuilder';
 import { getWebComponent } from './getWebComponent';
 
 export type ChildComponent = {
@@ -8,10 +11,15 @@ export type ChildComponent = {
 export class WebComponentFactory extends HTMLElement {
   static observedAttributes = [];
 
-  private _components = new Map<string, ChildComponent>();
+  get mode(): ShadowRootMode {
+    return getShadowRootModeOrThrow(this.getAttribute('#mode') || 'closed');
+  }
+
+  set mode(value: string) {
+    this.setAttribute('#mode', value ? getShadowRootModeOrThrow(value) : 'closed');
+  }
 
   connectedCallback(): void {
-    const defaultMode = this.getAttribute('#mode') || 'closed';
     for (const child of [...this.children]) {
       if (child.tagName !== 'WC') {
         this.removeChild(child);
@@ -23,15 +31,27 @@ export class WebComponentFactory extends HTMLElement {
         throw new Error('"#name" attribute is required');
       }
 
-      if (this._components.has(name)) {
+      if (childComponentRegistry.has(name)) {
         throw new Error(`Duplicate definition found for "${name}"`);
       }
 
-      const component = getWebComponent(child, defaultMode);
-      this._components.set(name, component);
-      customElements.define(name, component.constructor);
+      const component = getWebComponent(child, this.mode);
+      registerComponent(name, component);
     }
   }
 
-  getChildComponent = (name: string): ChildComponent | undefined => this._components.get(name);
+  getChildComponent = (name: string): ChildComponent | undefined =>
+    childComponentRegistry.get(name);
+
+  getChildComponentBuilder = (name: string): CustomComponentBuilder => {
+    if (!name) {
+      throw new Error('A non-empty "name" is required');
+    }
+
+    if (childComponentRegistry.has(name)) {
+      throw new Error(`Child component "${name} already exists"`);
+    }
+
+    return new CustomComponentBuilder(name);
+  };
 }

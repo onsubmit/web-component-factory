@@ -1,7 +1,7 @@
 import {
   getLifecycleNameOrThrow,
   getShadowRootModeOrThrow,
-  LifecycleName,
+  LifecycleSignatures as LifecycleCallbacks,
 } from '../utils/webComponents';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
 import { ChildComponent } from './webComponentFactory';
@@ -18,22 +18,32 @@ export function getWebComponent(element: Element, defaultMode: string): ChildCom
     mode,
   };
 
-  function extractLifecycles(): Map<LifecycleName, string> {
-    const map = new Map<LifecycleName, string>();
+  function extractLifecycles(): Partial<LifecycleCallbacks> {
+    const callbacks: Partial<LifecycleCallbacks> = {};
 
     const scripts = element.querySelectorAll('script[type="lifecycle"]');
     for (const script of scripts) {
       const lifecycle = getLifecycleNameOrThrow(script.getAttribute('callback') || '');
-      if (map.has(lifecycle)) {
+      if (callbacks[lifecycle]) {
         throw new Error(`Lifecycle "${lifecycle}" already defined`);
       }
 
-      const funcStr = script.textContent || '';
-      map.set(lifecycle, funcStr);
+      let funcStr = script.textContent || '';
+
+      if (lifecycle === 'attributeChanged') {
+        callbacks.attributeChanged = (name: string, oldValue: string, newValue: string): void => {
+          const funcStrWithArgs = `${funcStr}\n;attributeChangedCallback?.('${name}', '${oldValue}', '${newValue}');`;
+          eval(funcStrWithArgs);
+        };
+      } else {
+        funcStr += `\n;${lifecycle}Callback?.();`;
+        callbacks[lifecycle] = (): void => eval(funcStr);
+      }
+
       element.removeChild(script);
     }
 
-    return map;
+    return callbacks;
   }
 
   function getAttributes(): Record<string, string> {
