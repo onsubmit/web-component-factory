@@ -12,7 +12,7 @@
       <p>Jar jar binks blaster kylo ren</p>
     </template>
     <h1>wc-factory</h1>
-    <wc-factory #mode="open">
+    <wc-factory #mode="open" overrideable-text="I'm overrideable text">
       <template id="lorem-ipsum">
         <p>Lorem ipsum dolor sit amet</p>
       </template>
@@ -55,12 +55,15 @@
         </script>
       </web-component>
       <web-component #name="my-paragraph" text="Hello world">
-        <p>{text}</p>
+        <p>{text} & {overrideable-text}</p>
       </web-component>
       <web-component #name="my-collection">
         <my-paragraph text="My name is Andy!"></my-paragraph>
         <my-paragraph text="It's nice to meet you."></my-paragraph>
-        <my-paragraph text="I hope you have a great day!"></my-paragraph>
+        <my-paragraph
+          text="I hope you have a great day!"
+          overrideable-text="I'm overwritten text!"
+        ></my-paragraph>
       </web-component>
     </wc-factory>
     <my-paragraph id="p"></my-paragraph>
@@ -88,7 +91,7 @@
         .setMode('open')
         .setAttribute('text', 'Default message')
         .setLifecycleCallback('connected', () => console.log('👋'))
-        .setTemplateElement(span)
+        .setChildElement(span)
         .build();
     </script>
   </body>

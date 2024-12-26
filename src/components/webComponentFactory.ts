@@ -9,10 +9,20 @@ export type Component = {
   mode: ShadowRootMode;
 };
 
-const otherAllowedChildren = [HTMLTemplateElement];
+const otherAllowedChildren = ['TEMPLATE'];
 
 export class WebComponentFactory extends WebComponent {
   static observedAttributes = [];
+
+  private _attributes: Record<string, string> = {};
+
+  constructor() {
+    super();
+
+    for (const attribute of this.attributes) {
+      this._attributes[attribute.name] = attribute.value;
+    }
+  }
 
   get mode(): ShadowRootMode {
     return getShadowRootModeOrThrow(this.getAttribute('#mode') || 'closed');
@@ -24,9 +34,13 @@ export class WebComponentFactory extends WebComponent {
 
   connectedCallback(): void {
     for (const child of [...this.children]) {
-      if (child instanceof WebComponent) {
-        getWebComponent(child, this.mode);
-      } else if (!otherAllowedChildren.some((Class) => child instanceof Class)) {
+      if (child.tagName === 'WEB-COMPONENT') {
+        getWebComponent({
+          element: child,
+          defaultMode: this.mode,
+          globalAttributes: this._attributes,
+        });
+      } else if (!otherAllowedChildren.includes(child.tagName)) {
         this.removeChild(child);
       }
     }
@@ -42,7 +56,7 @@ export class WebComponentFactory extends WebComponent {
     }
 
     this.appendChild(element);
-    getWebComponent(element, this.mode);
+    getWebComponent({ element, defaultMode: this.mode, globalAttributes: this._attributes });
   };
 
   getComponent = (name: string): Component | undefined => componentRegistry.get(name);

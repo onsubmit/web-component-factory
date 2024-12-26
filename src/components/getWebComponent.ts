@@ -7,7 +7,13 @@ import {
 import { CustomComponentBuilder } from './customComponentBuilder';
 import { Component } from './webComponentFactory';
 
-export function getWebComponent(element: Element, defaultMode: string): Component {
+export function getWebComponent(input: {
+  element: Element;
+  defaultMode: string;
+  globalAttributes?: Record<string, string>;
+}): Component {
+  const { element, defaultMode, globalAttributes } = input;
+
   const name = element.getAttribute('#name');
   if (!name) {
     throw new Error('"#name" attribute is required');
@@ -53,10 +59,13 @@ export function getWebComponent(element: Element, defaultMode: string): Componen
   }
 
   function getAttributes(): Record<string, string> {
-    return [...element.attributes].reduce<Record<string, string>>((acc, attribute) => {
-      acc[attribute.name] = attribute.value;
-      return acc;
-    }, {});
+    return [...element.attributes].reduce<Record<string, string>>(
+      (acc, attribute) => {
+        acc[attribute.name] = attribute.value;
+        return acc;
+      },
+      { ...globalAttributes },
+    );
   }
 
   function getChild(): Element | undefined {

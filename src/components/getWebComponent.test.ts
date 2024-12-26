@@ -11,7 +11,7 @@ describe('getWebComponent', () => {
       </web-component>
     `);
 
-    getWebComponent(element, 'open');
+    getWebComponent({ element, defaultMode: 'open' });
 
     await fixture(html`<my-paragraph-1></my-paragraph-1>`);
     await screen.findByShadowText('Hello world');
@@ -24,7 +24,7 @@ describe('getWebComponent', () => {
       </web-component>
     `);
 
-    getWebComponent(element, 'open');
+    getWebComponent({ element, defaultMode: 'open' });
 
     await fixture(html`<my-paragraph-2 text="Foo bar baz and so on"></my-paragraph-2>`);
     await screen.findByShadowText('Foo bar baz and so on');
@@ -52,7 +52,7 @@ describe('getWebComponent', () => {
       </web-component>
     `);
 
-    getWebComponent(element, 'open');
+    getWebComponent({ element, defaultMode: 'open' });
 
     await fixture(html`<my-paragraph-3 text="How are you?"></my-paragraph-3>`);
     await screen.findByShadowText('How are you?');
@@ -72,7 +72,7 @@ describe('getWebComponent', () => {
       </web-component>
     `);
 
-    getWebComponent(element, 'closed');
+    getWebComponent({ element, defaultMode: 'closed' });
 
     await fixture(html`<my-paragraph-4></my-paragraph-4>`);
     const p = screen.queryByShadowText('Hello world');
@@ -96,6 +96,8 @@ describe('getWebComponent', () => {
       </web-component>
     `);
 
-    expect(() => getWebComponent(element, 'open')).toThrow('Lifecycle "connected" already defined');
+    expect(() => getWebComponent({ element, defaultMode: 'open' })).toThrow(
+      'Lifecycle "connected" already defined',
+    );
   });
 });
