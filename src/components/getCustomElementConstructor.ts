@@ -1,3 +1,4 @@
+import { getDynamicAttributes } from '../utils/getDynamicAttributes';
 import { LifecycleCallbacks } from '../utils/webComponents';
 
 export function getCustomElementConstructor(input: {
@@ -14,7 +15,7 @@ export function getCustomElementConstructor(input: {
 
     private _shadowRoot: ShadowRoot;
     private _templateHtml: string;
-    private _attributes = { ...attributes };
+    private _attributes = getDynamicAttributes(this, attributes);
 
     constructor() {
       super();
@@ -23,22 +24,6 @@ export function getCustomElementConstructor(input: {
         this._templateHtml = template.innerHTML;
       } else {
         this._templateHtml = template?.outerHTML ?? '';
-      }
-
-      for (const attribute of this.attributes) {
-        this._attributes[attribute.name] = attribute.value;
-      }
-
-      for (const key1 of Object.keys(this._attributes)) {
-        for (const key2 of Object.keys(this._attributes)) {
-          if (key1 === key2) {
-            continue;
-          }
-          this._attributes[key1] = this._attributes[key1].replaceAll(
-            `{${key2}}`,
-            this._attributes[key2],
-          );
-        }
       }
 
       this._shadowRoot = this.attachShadow({ mode });

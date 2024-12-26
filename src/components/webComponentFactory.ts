@@ -1,4 +1,5 @@
 import { componentRegistry } from '../componentRegistry';
+import { getDynamicAttributes } from '../utils/getDynamicAttributes';
 import { getShadowRootModeOrThrow } from '../utils/webComponents';
 import { CustomComponentBuilder } from './customComponentBuilder';
 import { getWebComponent } from './getWebComponent';
@@ -14,28 +15,7 @@ const otherAllowedChildren = ['TEMPLATE'];
 export class WebComponentFactory extends WebComponent {
   static observedAttributes = [];
 
-  private _attributes: Record<string, string> = {};
-
-  constructor() {
-    super();
-
-    for (const attribute of this.attributes) {
-      this._attributes[attribute.name] = attribute.value;
-    }
-
-    for (const key1 of Object.keys(this._attributes)) {
-      for (const key2 of Object.keys(this._attributes)) {
-        if (key1 === key2) {
-          continue;
-        }
-
-        this._attributes[key1] = this._attributes[key1].replaceAll(
-          `{${key2}}`,
-          this._attributes[key2],
-        );
-      }
-    }
-  }
+  private _attributes = getDynamicAttributes(this);
 
   get mode(): ShadowRootMode {
     return getShadowRootModeOrThrow(this.getAttribute('#mode') || 'closed');
