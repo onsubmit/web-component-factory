@@ -19,7 +19,7 @@ export function getCustomElementConstructor(input: {
     constructor() {
       super();
 
-      if (template?.tagName === 'TEMPLATE') {
+      if (template instanceof HTMLTemplateElement) {
         this._templateHtml = template.innerHTML;
       } else {
         this._templateHtml = template?.outerHTML ?? '';

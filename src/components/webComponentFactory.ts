@@ -9,7 +9,7 @@ export type Component = {
   mode: ShadowRootMode;
 };
 
-const allowedChildTags = ['WEB-COMPONENT', 'TEMPLATE'];
+const allowedChildren = [WebComponent, HTMLTemplateElement];
 
 export class WebComponentFactory extends WebComponent {
   static observedAttributes = [];
@@ -24,13 +24,9 @@ export class WebComponentFactory extends WebComponent {
 
   connectedCallback(): void {
     for (const child of [...this.children]) {
-      if (!allowedChildTags.includes(child.tagName)) {
+      if (!allowedChildren.some((Class) => child instanceof Class)) {
         this.removeChild(child);
         continue;
-      }
-
-      if (child.tagName === 'WEB-COMPONENT') {
-        getWebComponent(child, this.mode);
       }
     }
   }
