@@ -73,7 +73,7 @@ export function getWebComponent(element: Element, defaultMode: string): Componen
       document.querySelector(selector);
 
     if (!template) {
-      throw new Error(`Could not find <template> with selector "${selector}".`);
+      throw new Error(`Could not find template with selector "${selector}".`);
     }
 
     return template;
