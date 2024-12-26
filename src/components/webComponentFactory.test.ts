@@ -185,6 +185,61 @@ describe('WebComponentFactory', () => {
 
       await screen.findByShadowText('Merry Christmas!');
     });
+
+    it('should reference templates', async () => {
+      await fixture(html`
+        <template id="nerf-herder-ipsum">
+          <p>Jar jar binks blaster kylo ren</p>
+        </template>
+        <wc-factory #mode="open">
+          <template id="lorem-ipsum">
+            <p>Lorem ipsum dolor sit amet</p>
+          </template>
+          <wc #name="default-generator" #template="#lorem-ipsum"></wc>
+          <wc #name="custom-generator" #template="#lorem-ipsum">
+            <template id="lorem-ipsum">
+              <p>Faucibus vitae aliquet nec ullamcorper</p>
+            </template>
+          </wc>
+          <wc #name="nerf-herder-generator" #template="#nerf-herder-ipsum"></wc>
+        </wc-factory>
+      `);
+
+      await fixture(html`
+        <default-generator></default-generator>
+        <custom-generator></custom-generator>
+        <nerf-herder-generator></nerf-herder-generator>
+      `);
+
+      await screen.findByShadowText('Lorem ipsum dolor sit amet');
+      await screen.findByShadowText('Faucibus vitae aliquet nec ullamcorper');
+      await screen.findByShadowText('Jar jar binks blaster kylo ren');
+    });
+
+    it('should throw if referenced template is not found', async () => {
+      let errorEvent: ErrorEvent | undefined;
+
+      const errorEventHandler: ErrorEventHandler = (event) => {
+        event.preventDefault();
+        errorEvent = event;
+      };
+
+      const obj = { errorEventHandler };
+      const spy = vi.spyOn(obj, 'errorEventHandler');
+      window.addEventListener('error', obj.errorEventHandler);
+
+      await fixture(html`
+        <wc-factory #mode="open">
+          <wc #name="missing-template" #template="#invalid"></wc>
+        </wc-factory>
+      `);
+
+      expect(spy).toHaveBeenCalled();
+      invariant(errorEvent);
+      expect(errorEvent.message).toBe('Could not find template with selector "#invalid".');
+
+      window.removeEventListener('error', obj.errorEventHandler);
+    });
   });
 
   describe('programmatic', () => {
