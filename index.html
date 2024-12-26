@@ -10,6 +10,19 @@
 
     <h1>wc-factory</h1>
     <wc-factory #mode="open">
+      <template id="lorem-ipsum">
+        <p>Lorem ipsum dolor sit amet</p>
+      </template>
+      <template id="nerf-herder-ipsum">
+        <p>Jar jar binks blaster kylo ren</p>
+      </template>
+      <wc #name="default-generator" #template="lorem-ipsum"></wc>
+      <wc #name="custom-generator" #template="lorem-ipsum">
+        <template id="lorem-ipsum">
+          <p>Faucibus vitae aliquet nec ullamcorper</p>
+        </template>
+      </wc>
+      <wc #name="nerf-herder-generator" #template="nerf-herder-ipsum"></wc>
       <wc
         #name="my-button"
         #mode="closed"
@@ -54,6 +67,9 @@
     <my-button text="Click me!"></my-button>
     <my-collection></my-collection>
     <welcome-message text="Welcome, friend!"></welcome-message>
+    <default-generator></default-generator>
+    <custom-generator></custom-generator>
+    <nerf-herder-generator></nerf-herder-generator>
     <script>
       setTimeout(() => {
         const myButton = document.querySelector('my-button');
@@ -64,12 +80,15 @@
     <script type="module">
       import { WebComponentFactory } from '/src/index.ts';
 
+      const span = document.createElement('span');
+      span.textContent = '{text}';
+
       new WebComponentFactory()
         .getComponentBuilder('welcome-message')
         .setMode('open')
         .setAttribute('text', 'Default message')
         .setLifecycleCallback('connected', () => console.log('👋'))
-        .setTemplate('<span>{text}</span>')
+        .setTemplateElement(span)
         .build();
     </script>
   </body>

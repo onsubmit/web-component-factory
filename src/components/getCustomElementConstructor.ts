@@ -3,10 +3,10 @@ import { LifecycleCallbacks } from '../utils/webComponents';
 export function getCustomElementConstructor(input: {
   attributes: Record<string, string>;
   lifecycles: Partial<LifecycleCallbacks>;
-  templateHtml: string;
+  template: Element | undefined;
   mode: ShadowRootMode;
 }): CustomElementConstructor {
-  const { attributes, lifecycles, templateHtml, mode } = input;
+  const { attributes, lifecycles, template, mode } = input;
 
   // TODO: Figure out extending other element types
   return class extends HTMLElement {
@@ -19,7 +19,11 @@ export function getCustomElementConstructor(input: {
     constructor() {
       super();
 
-      this._templateHtml = templateHtml;
+      if (template?.tagName === 'TEMPLATE') {
+        this._templateHtml = template.innerHTML;
+      } else {
+        this._templateHtml = template?.outerHTML ?? '';
+      }
 
       for (const attribute of this.attributes) {
         this._attributes[attribute.name] = attribute.value;

@@ -7,13 +7,14 @@ describe('getCustomElementConstructor', () => {
   it('should render a basic component', async () => {
     const attributes = { name: 'Andy', age: '42' };
     const lifecycles = {};
-    const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
+    const template = document.createElement('p');
+    template.textContent = 'Hi my name is {name} and I am {age} years old.';
 
     const ctor = getCustomElementConstructor({
       attributes,
       lifecycles,
-      templateHtml,
+      template,
       mode,
     });
 
@@ -27,13 +28,14 @@ describe('getCustomElementConstructor', () => {
   it('should override attributes', async () => {
     const attributes = { name: 'Andy', age: '42' };
     const lifecycles = {};
-    const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
+    const template = document.createElement('p');
+    template.textContent = 'Hi my name is {name} and I am {age} years old.';
 
     const ctor = getCustomElementConstructor({
       attributes,
       lifecycles,
-      templateHtml,
+      template,
       mode,
     });
 
@@ -65,13 +67,14 @@ describe('getCustomElementConstructor', () => {
       },
     };
 
-    const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
+    const template = document.createElement('p');
+    template.textContent = 'Hi my name is {name} and I am {age} years old.';
 
     const ctor = getCustomElementConstructor({
       attributes,
       lifecycles,
-      templateHtml,
+      template,
       mode,
     });
 
@@ -107,13 +110,14 @@ describe('getCustomElementConstructor', () => {
       },
     };
 
-    const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'open';
+    const template = document.createElement('p');
+    template.textContent = 'Hi my name is {name} and I am {age} years old.';
 
     const ctor = getCustomElementConstructor({
       attributes,
       lifecycles,
-      templateHtml,
+      template,
       mode,
     });
 
@@ -134,13 +138,14 @@ describe('getCustomElementConstructor', () => {
   it('should use a closed shadow root mode', async () => {
     const attributes = { name: 'Andy', age: '42' };
     const lifecycles = {};
-    const templateHtml = '<p>Hi my name is {name} and I am {age} years old.</p>';
     const mode = 'closed';
+    const template = document.createElement('p');
+    template.textContent = 'Hi my name is {name} and I am {age} years old.';
 
     const ctor = getCustomElementConstructor({
       attributes,
       lifecycles,
-      templateHtml,
+      template,
       mode,
     });
 

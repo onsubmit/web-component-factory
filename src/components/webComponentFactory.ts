@@ -8,6 +8,8 @@ export type Component = {
   mode: ShadowRootMode;
 };
 
+const allowedChildTags = ['WC', 'TEMPLATE'];
+
 export class WebComponentFactory extends HTMLElement {
   static observedAttributes = [];
 
@@ -17,12 +19,14 @@ export class WebComponentFactory extends HTMLElement {
 
   connectedCallback(): void {
     for (const child of [...this.children]) {
-      if (child.tagName !== 'WC') {
+      if (!allowedChildTags.includes(child.tagName)) {
         this.removeChild(child);
         continue;
       }
 
-      getWebComponent(child, this.mode);
+      if (child.tagName === 'WC') {
+        getWebComponent(child, this.mode);
+      }
     }
   }
 

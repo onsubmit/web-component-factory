@@ -21,7 +21,7 @@ export function getWebComponent(element: Element, defaultMode: string): Componen
     .setMode(getShadowRootMode())
     .setLifecycleCallbacks(extractLifecycles())
     .setAttributes(getAttributes())
-    .setTemplate(getTemplateHtml())
+    .setTemplateElement(getTemplate())
     .build();
 
   function extractLifecycles(): Partial<LifecycleCallbacks> {
@@ -59,8 +59,23 @@ export function getWebComponent(element: Element, defaultMode: string): Componen
     }, {});
   }
 
-  function getTemplateHtml(): string {
-    return element.innerHTML;
+  function getTemplate(): Element | undefined {
+    const templateId = element.getAttribute('#template');
+    if (templateId) {
+      const selector = `template#${templateId}`;
+      const template =
+        element.querySelector(selector) ?? element.parentElement?.querySelector(selector);
+
+      if (!template) {
+        throw new Error(`Could not find <template> with id "${templateId}".`);
+      }
+
+      return template;
+    } else {
+      const template = document.createElement('template');
+      template.innerHTML = element.innerHTML;
+      return template;
+    }
   }
 
   function getShadowRootMode(): ShadowRootMode {

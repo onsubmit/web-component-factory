@@ -189,19 +189,6 @@ describe('WebComponentFactory', () => {
 
   describe('programmatic', () => {
     it('should render a basic component', async () => {
-      new WebComponentFactory()
-        .getComponentBuilder('my-span-1')
-        .setMode('open')
-        .setAttributes({ text: 'Hello World!' })
-        .setLifecycleCallback('connected', () => console.log('connectedCallback'))
-        .setTemplate('<span>{text}</span>')
-        .build();
-
-      await fixture(html`<my-span-1></my-span-1>`);
-      await screen.findByShadowText('Hello World!');
-    });
-
-    it('should render a basic component with an element template', async () => {
       const template = document.createElement('span');
       template.textContent = '{text}';
 
@@ -210,7 +197,7 @@ describe('WebComponentFactory', () => {
         .setMode('open')
         .setAttributes({ text: 'Hello World!' })
         .setLifecycleCallback('connected', () => console.log('connectedCallback'))
-        .setTemplate(template)
+        .setTemplateElement(template)
         .build();
 
       await fixture(html`<my-span-2></my-span-2>`);

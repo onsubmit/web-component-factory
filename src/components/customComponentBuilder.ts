@@ -6,14 +6,13 @@ import { Component } from './webComponentFactory';
 export class CustomComponentBuilder {
   private _name: string;
   private _mode: ShadowRootMode;
-  private _templateHtml: string;
+  private _template: Element | undefined;
   private _attributes: Map<string, string>;
   private _lifecycles: Partial<LifecycleCallbacks>;
 
   constructor(name: string) {
     this._name = name;
     this._mode = 'closed';
-    this._templateHtml = '';
     this._attributes = new Map();
     this._lifecycles = {};
   }
@@ -36,11 +35,8 @@ export class CustomComponentBuilder {
     return this;
   };
 
-  setTemplate: {
-    (input: HTMLElement): CustomComponentBuilder;
-    (input: string): CustomComponentBuilder;
-  } = (input: HTMLElement | string): this => {
-    this._templateHtml = input instanceof HTMLElement ? input.outerHTML : input;
+  setTemplateElement = (element: Element | undefined): this => {
+    this._template = element;
     return this;
   };
 
@@ -62,7 +58,7 @@ export class CustomComponentBuilder {
       constructor: getCustomElementConstructor({
         lifecycles: this._lifecycles,
         attributes: Object.fromEntries(this._attributes),
-        templateHtml: this._templateHtml,
+        template: this._template,
         mode: this._mode,
       }),
       mode: this._mode,
