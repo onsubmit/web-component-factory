@@ -1,8 +1,8 @@
 import { componentRegistry } from '../componentRegistry';
-import { getDynamicAttributes } from '../utils/getDynamicAttributes';
-import { getShadowRootModeOrThrow } from '../utils/webComponents';
-import { CustomComponentBuilder } from './customComponentBuilder';
-import { getWebComponent } from './getWebComponent';
+import { CustomComponentBuilder } from '../customComponentBuilder';
+import { getDynamicAttributes } from '../getDynamicAttributes';
+import { getWebComponent } from '../getWebComponent';
+import { getShadowRootModeOrThrow } from '../webComponents';
 import { WebComponent } from './webComponent';
 
 export type Component = {

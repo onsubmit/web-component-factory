@@ -1,5 +1,5 @@
-import { getDynamicAttributes } from '../utils/getDynamicAttributes';
-import { LifecycleCallbacks } from '../utils/webComponents';
+import { getDynamicAttributes } from './getDynamicAttributes';
+import { LifecycleCallbacks } from './webComponents';
 
 export function getCustomElementConstructor(input: {
   attributes: Record<string, string>;

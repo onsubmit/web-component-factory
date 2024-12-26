@@ -1,7 +1,7 @@
-import { componentRegistry } from '../componentRegistry';
-import { LifecycleCallback, LifecycleCallbacks, LifecycleName } from '../utils/webComponents';
+import { componentRegistry } from './componentRegistry';
+import { Component } from './components/webComponentFactory';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
-import { Component } from './webComponentFactory';
+import { LifecycleCallback, LifecycleCallbacks, LifecycleName } from './webComponents';
 
 export class CustomComponentBuilder {
   private _name: string;

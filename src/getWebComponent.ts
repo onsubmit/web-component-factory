@@ -1,11 +1,11 @@
-import { componentRegistry } from '../componentRegistry';
+import { componentRegistry } from './componentRegistry';
+import { Component } from './components/webComponentFactory';
+import { CustomComponentBuilder } from './customComponentBuilder';
 import {
   getLifecycleNameOrThrow,
   getShadowRootModeOrThrow,
   LifecycleCallbacks,
-} from '../utils/webComponents';
-import { CustomComponentBuilder } from './customComponentBuilder';
-import { Component } from './webComponentFactory';
+} from './webComponents';
 
 export function getWebComponent(input: {
   element: Element;
