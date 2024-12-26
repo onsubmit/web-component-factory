@@ -1,9 +1,9 @@
-import { childComponentRegistry, registerComponent } from '../childComponentRegistry';
+import { componentRegistry, registerComponent } from '../componentRegistry';
 import { getShadowRootModeOrThrow } from '../utils/webComponents';
 import { CustomComponentBuilder } from './customComponentBuilder';
 import { getWebComponent } from './getWebComponent';
 
-export type ChildComponent = {
+export type Component = {
   constructor: CustomElementConstructor;
   mode: ShadowRootMode;
 };
@@ -31,7 +31,7 @@ export class WebComponentFactory extends HTMLElement {
         throw new Error('"#name" attribute is required');
       }
 
-      if (childComponentRegistry.has(name)) {
+      if (componentRegistry.has(name)) {
         throw new Error(`Duplicate definition found for "${name}"`);
       }
 
@@ -40,15 +40,14 @@ export class WebComponentFactory extends HTMLElement {
     }
   }
 
-  getChildComponent = (name: string): ChildComponent | undefined =>
-    childComponentRegistry.get(name);
+  getComponent = (name: string): Component | undefined => componentRegistry.get(name);
 
-  getChildComponentBuilder = (name: string): CustomComponentBuilder => {
+  getComponentBuilder = (name: string): CustomComponentBuilder => {
     if (!name) {
       throw new Error('A non-empty "name" is required');
     }
 
-    if (childComponentRegistry.has(name)) {
+    if (componentRegistry.has(name)) {
       throw new Error(`Child component "${name} already exists"`);
     }
 

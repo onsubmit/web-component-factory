@@ -4,9 +4,9 @@ import {
   LifecycleSignatures as LifecycleCallbacks,
 } from '../utils/webComponents';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
-import { ChildComponent } from './webComponentFactory';
+import { Component } from './webComponentFactory';
 
-export function getWebComponent(element: Element, defaultMode: string): ChildComponent {
+export function getWebComponent(element: Element, defaultMode: string): Component {
   const mode = getShadowRootMode();
   return {
     constructor: getCustomElementConstructor({

@@ -174,7 +174,7 @@ describe('WebComponentFactory', () => {
       const factory = document.querySelector<WebComponentFactory>('wc-factory');
       invariant(factory);
 
-      const component = factory.getChildComponent('my-paragraph-7');
+      const component = factory.getComponent('my-paragraph-7');
       invariant(component);
 
       expect(component.mode).toBe('open');
@@ -184,6 +184,21 @@ describe('WebComponentFactory', () => {
       document.body.appendChild(paragraph);
 
       await screen.findByShadowText('Merry Christmas!');
+    });
+  });
+
+  describe('programmatic', () => {
+    it('should render a basic component', async () => {
+      new WebComponentFactory()
+        .getComponentBuilder('my-span')
+        .setMode('open')
+        .setAttribute('text', 'Hello World!')
+        .setLifecycleCallback('connected', () => console.log('connectedCallback'))
+        .setTemplate('<span>{text}</span>')
+        .build();
+
+      await fixture(html`<my-span></my-span>`);
+      await screen.findByShadowText('Hello World!');
     });
   });
 });

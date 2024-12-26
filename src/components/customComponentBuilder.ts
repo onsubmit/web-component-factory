@@ -1,7 +1,7 @@
-import { registerComponent } from '../childComponentRegistry';
+import { registerComponent } from '../componentRegistry';
 import { LifecycleName, LifecycleSignature, LifecycleSignatures } from '../utils/webComponents';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
-import { ChildComponent } from './webComponentFactory';
+import { Component } from './webComponentFactory';
 
 export class CustomComponentBuilder {
   private _name: string;
@@ -37,8 +37,8 @@ export class CustomComponentBuilder {
   };
 
   setTemplate: {
-    (input: HTMLElement): void;
-    (input: string): void;
+    (input: HTMLElement): CustomComponentBuilder;
+    (input: string): CustomComponentBuilder;
   } = (input: HTMLElement | string): this => {
     this._templateHtml = input instanceof HTMLElement ? input.outerHTML : input;
     return this;
@@ -52,7 +52,7 @@ export class CustomComponentBuilder {
     return this;
   };
 
-  build = (): ChildComponent => {
+  build = (): Component => {
     const component = {
       constructor: getCustomElementConstructor({
         lifecycles: this._lifecycles,
