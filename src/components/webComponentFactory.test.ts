@@ -11,9 +11,9 @@ describe('WebComponentFactory', () => {
     it('should render a basic component', async () => {
       await fixture(html`
         <wc-factory #mode="open">
-          <wc #name="my-paragraph-1" text="Hello world">
+          <web-component #name="my-paragraph-1" text="Hello world">
             <p>{text}</p>
-          </wc>
+          </web-component>
         </wc-factory>
       `);
 
@@ -24,9 +24,9 @@ describe('WebComponentFactory', () => {
     it('should override attributes', async () => {
       await fixture(html`
         <wc-factory #mode="open">
-          <wc #name="my-paragraph-2" text="Hello world">
+          <web-component #name="my-paragraph-2" text="Hello world">
             <p>{text}</p>
-          </wc>
+          </web-component>
         </wc-factory>
       `);
 
@@ -39,7 +39,7 @@ describe('WebComponentFactory', () => {
 
       await fixture(html`
         <wc-factory #mode="open">
-          <wc #name="my-paragraph-3" text="Hello world">
+          <web-component #name="my-paragraph-3" text="Hello world">
             <p>{text}</p>
             <script type="lifecycle" callback="connected">
               function connectedCallback() {
@@ -55,7 +55,7 @@ describe('WebComponentFactory', () => {
                 console.log('newValue: ' + newValue);
               }
             </script>
-          </wc>
+          </web-component>
         </wc-factory>
       `);
 
@@ -74,9 +74,9 @@ describe('WebComponentFactory', () => {
       // wc-factory defaults to "closed"
       await fixture(html`
         <wc-factory>
-          <wc #name="my-paragraph-4" text="Hello world">
+          <web-component #name="my-paragraph-4" text="Hello world">
             <p>{text}</p>
-          </wc>
+          </web-component>
         </wc-factory>
       `);
 
@@ -85,12 +85,12 @@ describe('WebComponentFactory', () => {
       expect(p).toBeNull();
     });
 
-    it('ignores children other than <wc> tags', async () => {
+    it('ignores children other than <web-component> tags', async () => {
       await fixture(html`
         <wc-factory #mode="open">
-          <wc #name="my-paragraph-5" text="Hello world">
+          <web-component #name="my-paragraph-5" text="Hello world">
             <p>{text}</p>
-          </wc>
+          </web-component>
           <b>I'm ignored</b>
         </wc-factory>
       `);
@@ -116,9 +116,9 @@ describe('WebComponentFactory', () => {
 
       await fixture(html`
         <wc-factory #mode="closed">
-          <wc text="Hello world">
+          <web-component text="Hello world">
             <p>{text}</p>
-          </wc>
+          </web-component>
         </wc-factory>
       `);
 
@@ -143,12 +143,12 @@ describe('WebComponentFactory', () => {
 
       await fixture(html`
         <wc-factory #mode="closed">
-          <wc #name="my-paragraph-6" text="Hello world">
+          <web-component #name="my-paragraph-6" text="Hello world">
             <p>{text}</p>
-          </wc>
-          <wc #name="my-paragraph-6" text="Good morning">
+          </web-component>
+          <web-component #name="my-paragraph-6" text="Good morning">
             <p>{text}</p>
-          </wc>
+          </web-component>
         </wc-factory>
       `);
 
@@ -162,9 +162,9 @@ describe('WebComponentFactory', () => {
     it('should expose the child component constructors', async () => {
       await fixture(html`
         <wc-factory #mode="open">
-          <wc #name="my-paragraph-7" text="Hello world">
+          <web-component #name="my-paragraph-7" text="Hello world">
             <p>{text}</p>
-          </wc>
+          </web-component>
         </wc-factory>
       `);
 
@@ -195,13 +195,16 @@ describe('WebComponentFactory', () => {
           <template id="lorem-ipsum">
             <p>Lorem ipsum dolor sit amet</p>
           </template>
-          <wc #name="default-generator" #template="#lorem-ipsum"></wc>
-          <wc #name="custom-generator" #template="#lorem-ipsum">
+          <web-component #name="default-generator" #template="#lorem-ipsum"></web-component>
+          <web-component #name="custom-generator" #template="#lorem-ipsum">
             <template id="lorem-ipsum">
               <p>Faucibus vitae aliquet nec ullamcorper</p>
             </template>
-          </wc>
-          <wc #name="nerf-herder-generator" #template="#nerf-herder-ipsum"></wc>
+          </web-component>
+          <web-component
+            #name="nerf-herder-generator"
+            #template="#nerf-herder-ipsum"
+          ></web-component>
         </wc-factory>
       `);
 
@@ -230,7 +233,7 @@ describe('WebComponentFactory', () => {
 
       await fixture(html`
         <wc-factory #mode="open">
-          <wc #name="missing-template" #template="#invalid"></wc>
+          <web-component #name="missing-template" #template="#invalid"></web-component>
         </wc-factory>
       `);
 
@@ -271,6 +274,40 @@ describe('WebComponentFactory', () => {
       expect(() => factory.getComponentBuilder('my-span-3')).toThrow(
         'Component "my-span-3" already exists',
       );
+    });
+
+    it('should reference templates', async () => {
+      const factory = new WebComponentFactory();
+      factory.mode = 'open';
+
+      const factoryTemplate = document.createElement('template');
+      factoryTemplate.id = 'template';
+      factoryTemplate.innerHTML = '<p>I am a factory template</p>';
+      factory.addTemplate(factoryTemplate);
+
+      const componentTemplate = document.createElement('template');
+      componentTemplate.id = 'template';
+      componentTemplate.innerHTML = '<p>I am a component template</p>';
+
+      const wc1 = document.createElement('web-component');
+      wc1.setAttribute('#name', 'my-component-1');
+      wc1.setAttribute('#template', '#template');
+      wc1.appendChild(componentTemplate);
+
+      const wc2 = document.createElement('web-component');
+      wc2.setAttribute('#name', 'my-component-2');
+      wc2.setAttribute('#template', '#template');
+
+      factory.addComponent(wc1);
+      factory.addComponent(wc2);
+
+      await fixture(html`
+        <my-component-1></my-component-1>
+        <my-component-2></my-component-2>
+      `);
+
+      await screen.findByShadowText('I am a component template');
+      await screen.findByShadowText('I am a factory template');
     });
   });
 });

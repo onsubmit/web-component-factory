@@ -16,14 +16,14 @@
       <template id="lorem-ipsum">
         <p>Lorem ipsum dolor sit amet</p>
       </template>
-      <wc #name="default-generator" #template="#lorem-ipsum"></wc>
-      <wc #name="custom-generator" #template="#lorem-ipsum">
+      <web-component #name="default-generator" #template="#lorem-ipsum"></web-component>
+      <web-component #name="custom-generator" #template="#lorem-ipsum">
         <template id="lorem-ipsum">
           <p>Faucibus vitae aliquet nec ullamcorper</p>
         </template>
-      </wc>
-      <wc #name="nerf-herder-generator" #template="#nerf-herder-ipsum"></wc>
-      <wc
+      </web-component>
+      <web-component #name="nerf-herder-generator" #template="#nerf-herder-ipsum"></web-component>
+      <web-component
         #name="my-button"
         #mode="closed"
         text="Default value for button"
@@ -53,15 +53,15 @@
             console.debug('newValue:', newValue);
           }
         </script>
-      </wc>
-      <wc #name="my-paragraph" text="Hello world">
+      </web-component>
+      <web-component #name="my-paragraph" text="Hello world">
         <p>{text}</p>
-      </wc>
-      <wc #name="my-collection">
+      </web-component>
+      <web-component #name="my-collection">
         <my-paragraph text="My name is Andy!"></my-paragraph>
         <my-paragraph text="It's nice to meet you."></my-paragraph>
         <my-paragraph text="I hope you have a great day!"></my-paragraph>
-      </wc>
+      </web-component>
     </wc-factory>
     <my-paragraph id="p"></my-paragraph>
     <my-button text="Click me!"></my-button>

@@ -6,9 +6,9 @@ import { getWebComponent } from './getWebComponent';
 describe('getWebComponent', () => {
   it('should render a basic component', async () => {
     const element = await fixture(html`
-      <wc #name="my-paragraph-1" text="Hello world">
+      <web-component #name="my-paragraph-1" text="Hello world">
         <p>{text}</p>
-      </wc>
+      </web-component>
     `);
 
     getWebComponent(element, 'open');
@@ -19,9 +19,9 @@ describe('getWebComponent', () => {
 
   it('should override attributes', async () => {
     const element = await fixture(html`
-      <wc #name="my-paragraph-2" text="Hello world">
+      <web-component #name="my-paragraph-2" text="Hello world">
         <p>{text}</p>
-      </wc>
+      </web-component>
     `);
 
     getWebComponent(element, 'open');
@@ -34,7 +34,7 @@ describe('getWebComponent', () => {
     const spy = vi.spyOn(console, 'log');
 
     const element = await fixture(html`
-      <wc #name="my-paragraph-3" text="Hello world">
+      <web-component #name="my-paragraph-3" text="Hello world">
         <p>{text}</p>
         <script type="lifecycle" callback="connected">
           function connectedCallback() {
@@ -49,7 +49,7 @@ describe('getWebComponent', () => {
             console.log('newValue: ' + newValue);
           }
         </script>
-      </wc>
+      </web-component>
     `);
 
     getWebComponent(element, 'open');
@@ -67,9 +67,9 @@ describe('getWebComponent', () => {
 
   it('should use a closed shadow root mode', async () => {
     const element = await fixture(html`
-      <wc #name="my-paragraph-4" text="Hello world">
+      <web-component #name="my-paragraph-4" text="Hello world">
         <p>{text}</p>
-      </wc>
+      </web-component>
     `);
 
     getWebComponent(element, 'closed');
@@ -81,7 +81,7 @@ describe('getWebComponent', () => {
 
   it('should throw when an duplicate lifecycle is found', async () => {
     const element = await fixture(html`
-      <wc #name="my-paragraph-5" text="Hello world">
+      <web-component #name="my-paragraph-5" text="Hello world">
         <p>{text}</p>
         <script type="lifecycle" callback="connected">
           function connectedCallback() {
@@ -93,7 +93,7 @@ describe('getWebComponent', () => {
             console.log('connectedCallback');
           }
         </script>
-      </wc>
+      </web-component>
     `);
 
     expect(() => getWebComponent(element, 'open')).toThrow('Lifecycle "connected" already defined');

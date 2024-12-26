@@ -2,19 +2,24 @@ import { componentRegistry } from '../componentRegistry';
 import { getShadowRootModeOrThrow } from '../utils/webComponents';
 import { CustomComponentBuilder } from './customComponentBuilder';
 import { getWebComponent } from './getWebComponent';
+import { WebComponent } from './webComponent';
 
 export type Component = {
   constructor: CustomElementConstructor;
   mode: ShadowRootMode;
 };
 
-const allowedChildTags = ['WC', 'TEMPLATE'];
+const allowedChildTags = ['WEB-COMPONENT', 'TEMPLATE'];
 
-export class WebComponentFactory extends HTMLElement {
+export class WebComponentFactory extends WebComponent {
   static observedAttributes = [];
 
   get mode(): ShadowRootMode {
     return getShadowRootModeOrThrow(this.getAttribute('#mode') || 'closed');
+  }
+
+  set mode(mode: ShadowRootMode) {
+    this.setAttribute('#mode', mode);
   }
 
   connectedCallback(): void {
@@ -24,11 +29,24 @@ export class WebComponentFactory extends HTMLElement {
         continue;
       }
 
-      if (child.tagName === 'WC') {
+      if (child.tagName === 'WEB-COMPONENT') {
         getWebComponent(child, this.mode);
       }
     }
   }
+
+  addTemplate = (template: HTMLTemplateElement): void => {
+    this.appendChild(template);
+  };
+
+  addComponent = (element: HTMLElement): void => {
+    if (!(element instanceof WebComponent)) {
+      throw new Error('Element must be a <web-component>');
+    }
+
+    this.appendChild(element);
+    getWebComponent(element, this.mode);
+  };
 
   getComponent = (name: string): Component | undefined => componentRegistry.get(name);
 

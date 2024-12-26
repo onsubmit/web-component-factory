@@ -53,6 +53,15 @@ export class CustomComponentBuilder {
     return this;
   };
 
+  addTemplate = (template: HTMLTemplateElement): this => {
+    if (!this._template) {
+      throw new Error('Base template element not set. Call "setTemplateElement" first.');
+    }
+
+    this._template.parentElement?.appendChild(template);
+    return this;
+  };
+
   build = (): Component => {
     const component = {
       constructor: getCustomElementConstructor({
