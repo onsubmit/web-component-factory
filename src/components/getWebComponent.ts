@@ -21,7 +21,7 @@ export function getWebComponent(element: Element, defaultMode: string): Componen
     .setMode(getShadowRootMode())
     .setLifecycleCallbacks(extractLifecycles())
     .setAttributes(getAttributes())
-    .setChildElement(getTemplate())
+    .setChildElement(getChild())
     .build();
 
   function extractLifecycles(): Partial<LifecycleCallbacks> {
@@ -59,7 +59,7 @@ export function getWebComponent(element: Element, defaultMode: string): Componen
     }, {});
   }
 
-  function getTemplate(): Element | undefined {
+  function getChild(): Element | undefined {
     const selector = element.getAttribute('#template');
     if (!selector) {
       const template = document.createElement('template');

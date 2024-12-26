@@ -247,15 +247,15 @@ describe('WebComponentFactory', () => {
 
   describe('programmatic', () => {
     it('should render a basic component', async () => {
-      const template = document.createElement('span');
-      template.textContent = '{text}';
+      const child = document.createElement('span');
+      child.textContent = '{text}';
 
       new WebComponentFactory()
         .getComponentBuilder('my-span-2')
         .setMode('open')
         .setAttributes({ text: 'Hello World!' })
         .setLifecycleCallback('connected', () => console.log('connectedCallback'))
-        .setChildElement(template)
+        .setChildElement(child)
         .build();
 
       await fixture(html`<my-span-2></my-span-2>`);
@@ -273,6 +273,14 @@ describe('WebComponentFactory', () => {
       factory.getComponentBuilder('my-span-3').build();
       expect(() => factory.getComponentBuilder('my-span-3')).toThrow(
         'Component "my-span-3" already exists',
+      );
+    });
+
+    it('should throw when adding a template before child is set', () => {
+      const factory = new WebComponentFactory();
+      const template = document.createElement('template');
+      expect(() => factory.getComponentBuilder('my-span-4').addTemplate(template)).toThrow(
+        'Child element not set. Call "setChildElement" first.',
       );
     });
 
@@ -308,6 +316,23 @@ describe('WebComponentFactory', () => {
 
       await screen.findByShadowText('I am a component template');
       await screen.findByShadowText('I am a factory template');
+    });
+
+    it('should add a template', async () => {
+      const factory = new WebComponentFactory();
+      const template = document.createElement('template');
+      const child = document.createElement('span');
+      child.textContent = '{text}';
+      factory
+        .getComponentBuilder('my-span-4')
+        .setMode('open')
+        .setAttributes({ text: 'Hello World!' })
+        .setChildElement(child)
+        .addTemplate(template)
+        .build();
+
+      await fixture(html`<my-span-4></my-span-4>`);
+      await screen.findByShadowText('Hello World!');
     });
   });
 });
