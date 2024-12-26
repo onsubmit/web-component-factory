@@ -334,5 +334,12 @@ describe('WebComponentFactory', () => {
       await fixture(html`<my-span-4></my-span-4>`);
       await screen.findByShadowText('Hello World!');
     });
+
+    it('should throw if added component is not a WebComponent', () => {
+      const span = document.createElement('span');
+      expect(() => new WebComponentFactory().addComponent(span)).toThrow(
+        'Element must be a <web-component>. Found: "SPAN".',
+      );
+    });
   });
 });

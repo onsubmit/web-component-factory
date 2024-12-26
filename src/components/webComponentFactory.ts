@@ -9,7 +9,7 @@ export type Component = {
   mode: ShadowRootMode;
 };
 
-const allowedChildren = [WebComponent, HTMLTemplateElement];
+const otherAllowedChildren = [HTMLTemplateElement];
 
 export class WebComponentFactory extends WebComponent {
   static observedAttributes = [];
@@ -24,9 +24,10 @@ export class WebComponentFactory extends WebComponent {
 
   connectedCallback(): void {
     for (const child of [...this.children]) {
-      if (!allowedChildren.some((Class) => child instanceof Class)) {
+      if (child instanceof WebComponent) {
+        getWebComponent(child, this.mode);
+      } else if (!otherAllowedChildren.some((Class) => child instanceof Class)) {
         this.removeChild(child);
-        continue;
       }
     }
   }
@@ -37,7 +38,7 @@ export class WebComponentFactory extends WebComponent {
 
   addComponent = (element: HTMLElement): void => {
     if (!(element instanceof WebComponent)) {
-      throw new Error('Element must be a <web-component>');
+      throw new Error(`Element must be a <web-component>. Found: "${element.tagName}".`);
     }
 
     this.appendChild(element);
