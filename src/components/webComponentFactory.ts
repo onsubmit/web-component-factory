@@ -22,6 +22,16 @@ export class WebComponentFactory extends WebComponent {
     for (const attribute of this.attributes) {
       this._attributes[attribute.name] = attribute.value;
     }
+
+    for (const [key1, value1] of Object.entries(this._attributes)) {
+      for (const [key2, value2] of Object.entries(this._attributes)) {
+        if (key1 === key2) {
+          continue;
+        }
+
+        this._attributes[key1] = value1.replaceAll(`{${key2}}`, value2);
+      }
+    }
   }
 
   get mode(): ShadowRootMode {

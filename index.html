@@ -12,7 +12,12 @@
       <p>Jar jar binks blaster kylo ren</p>
     </template>
     <h1>wc-factory</h1>
-    <wc-factory #mode="open" overrideable-text="I'm overrideable text">
+    <wc-factory
+      #mode="open"
+      overrideable-text='I&apos;m overrideable text. foo-bar="{foo-bar}"'
+      foo-bar="Foo Bar: {fizz-buzz}"
+      fizz-buzz="Fizz Buzz"
+    >
       <template id="lorem-ipsum">
         <p>Lorem ipsum dolor sit amet</p>
       </template>
@@ -26,7 +31,7 @@
       <web-component
         #name="my-button"
         #mode="closed"
-        text="Default value for button"
+        text="Click for alert: {alert}"
         alert="Default value for alert"
       >
         <button onclick="alert('{alert}')">{text}</button>
@@ -67,7 +72,7 @@
       </web-component>
     </wc-factory>
     <my-paragraph id="p"></my-paragraph>
-    <my-button text="Click me!"></my-button>
+    <my-button text='Click me for an alert that says "{alert}"!'></my-button>
     <my-collection></my-collection>
     <welcome-message text="Welcome, friend!"></welcome-message>
     <default-generator></default-generator>
@@ -76,8 +81,8 @@
     <script>
       setTimeout(() => {
         const myButton = document.querySelector('my-button');
-        myButton.setAttribute('text', 'Cmon, click me!');
         myButton.setAttribute('alert', 'Thank you for clicking me!');
+        myButton.setAttribute('text', 'Cmon, click me for an alert that says "{alert}"!');
       }, 3000);
     </script>
     <script type="module">
