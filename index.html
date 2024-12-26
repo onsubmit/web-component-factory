@@ -8,21 +8,21 @@
   <body>
     <script type="module" src="/src/main.ts"></script>
 
+    <template id="nerf-herder-ipsum">
+      <p>Jar jar binks blaster kylo ren</p>
+    </template>
     <h1>wc-factory</h1>
     <wc-factory #mode="open">
       <template id="lorem-ipsum">
         <p>Lorem ipsum dolor sit amet</p>
       </template>
-      <template id="nerf-herder-ipsum">
-        <p>Jar jar binks blaster kylo ren</p>
-      </template>
-      <wc #name="default-generator" #template="lorem-ipsum"></wc>
-      <wc #name="custom-generator" #template="lorem-ipsum">
+      <wc #name="default-generator" #template="#lorem-ipsum"></wc>
+      <wc #name="custom-generator" #template="#lorem-ipsum">
         <template id="lorem-ipsum">
           <p>Faucibus vitae aliquet nec ullamcorper</p>
         </template>
       </wc>
-      <wc #name="nerf-herder-generator" #template="nerf-herder-ipsum"></wc>
+      <wc #name="nerf-herder-generator" #template="#nerf-herder-ipsum"></wc>
       <wc
         #name="my-button"
         #mode="closed"
