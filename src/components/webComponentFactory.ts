@@ -17,6 +17,11 @@ export class WebComponentFactory extends WebComponent {
 
   private _attributes = getDynamicAttributes(this);
 
+  constructor() {
+    super();
+    this.style.display = 'none';
+  }
+
   get mode(): ShadowRootMode {
     return getShadowRootModeOrThrow(this.getAttribute('#mode') || 'closed');
   }
