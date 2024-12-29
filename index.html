@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>wc-factory | onsubmit</title>
+    <title>web-component-factory | onsubmit</title>
   </head>
   <body>
     <script type="module" src="/src/main.ts"></script>
@@ -11,8 +11,7 @@
     <template id="nerf-herder-ipsum">
       <p>Jar jar binks blaster kylo ren</p>
     </template>
-    <h1>wc-factory</h1>
-    <wc-factory
+    <web-component-factory
       #mode="open"
       overrideable-text='I&apos;m overrideable text. foo-bar="{foo-bar}"'
       foo-bar="Foo Bar: {fizz-buzz}"
@@ -74,7 +73,7 @@
           overrideable-text="I can also override text!"
         ></my-paragraph>
       </web-component>
-    </wc-factory>
+    </web-component-factory>
     <my-paragraph id="p"></my-paragraph>
     <my-button text='Click me for an alert that says "{alert}"!'></my-button>
     <my-collection></my-collection>

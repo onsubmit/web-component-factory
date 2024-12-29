@@ -10,11 +10,11 @@ describe('WebComponentFactory', () => {
   describe('markup', () => {
     it('should render a basic component', async () => {
       await fixture(html`
-        <wc-factory #mode="open">
+        <web-component-factory #mode="open">
           <web-component #name="my-paragraph-1" text="Hello world">
             <p>{text}</p>
           </web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       await fixture(html`<my-paragraph-1></my-paragraph-1>`);
@@ -23,11 +23,11 @@ describe('WebComponentFactory', () => {
 
     it('should override attributes', async () => {
       await fixture(html`
-        <wc-factory #mode="open">
+        <web-component-factory #mode="open">
           <web-component #name="my-paragraph-2" text="Hello world">
             <p>{text}</p>
           </web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       await fixture(html`<my-paragraph-2 text="Foo bar baz and so on"></my-paragraph-2>`);
@@ -36,11 +36,11 @@ describe('WebComponentFactory', () => {
 
     it('should reference global attributes', async () => {
       await fixture(html`
-        <wc-factory #mode="open" text-a="A" text-b="B" text-c="{text-a}{text-b}">
+        <web-component-factory #mode="open" text-a="A" text-b="B" text-c="{text-a}{text-b}">
           <web-component #name="my-paragraph-3">
             <p>{text-a} + {text-b} = {text-c}</p>
           </web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       await fixture(html`<my-paragraph-3></my-paragraph-3>`);
@@ -51,7 +51,7 @@ describe('WebComponentFactory', () => {
       const spy = vi.spyOn(console, 'log');
 
       await fixture(html`
-        <wc-factory #mode="open">
+        <web-component-factory #mode="open">
           <web-component #name="my-paragraph-4" text="Hello world">
             <p>{text}</p>
             <script type="lifecycle" callback="connected">
@@ -69,7 +69,7 @@ describe('WebComponentFactory', () => {
               }
             </script>
           </web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       await fixture(html`<my-paragraph-4 text="How are you?"></my-paragraph-4>`);
@@ -84,13 +84,13 @@ describe('WebComponentFactory', () => {
     });
 
     it('should use a closed shadow root mode', async () => {
-      // wc-factory defaults to "closed"
+      // web-component-factory defaults to "closed"
       await fixture(html`
-        <wc-factory>
+        <web-component-factory>
           <web-component #name="my-paragraph-5" text="Hello world">
             <p>{text}</p>
           </web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       await fixture(html`<my-paragraph-5></my-paragraph-5>`);
@@ -100,12 +100,12 @@ describe('WebComponentFactory', () => {
 
     it('ignores children other than <web-component> tags', async () => {
       await fixture(html`
-        <wc-factory #mode="open">
+        <web-component-factory #mode="open">
           <web-component #name="my-paragraph-6" text="Hello world">
             <p>{text}</p>
           </web-component>
           <b>I'm ignored</b>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       await fixture(html`<my-paragraph-6></my-paragraph-6>`);
@@ -128,11 +128,11 @@ describe('WebComponentFactory', () => {
       window.addEventListener('error', obj.errorEventHandler);
 
       await fixture(html`
-        <wc-factory #mode="closed">
+        <web-component-factory #mode="closed">
           <web-component text="Hello world">
             <p>{text}</p>
           </web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       expect(spy).toHaveBeenCalled();
@@ -155,14 +155,14 @@ describe('WebComponentFactory', () => {
       window.addEventListener('error', obj.errorEventHandler);
 
       await fixture(html`
-        <wc-factory #mode="closed">
+        <web-component-factory #mode="closed">
           <web-component #name="my-paragraph-7" text="Hello world">
             <p>{text}</p>
           </web-component>
           <web-component #name="my-paragraph-7" text="Good morning">
             <p>{text}</p>
           </web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       expect(spy).toHaveBeenCalled();
@@ -174,17 +174,17 @@ describe('WebComponentFactory', () => {
 
     it('should expose the child component constructors', async () => {
       await fixture(html`
-        <wc-factory #mode="open">
+        <web-component-factory #mode="open">
           <web-component #name="my-paragraph-8" text="Hello world">
             <p>{text}</p>
           </web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       await fixture(html`<my-paragraph-8></my-paragraph-8>`);
       await screen.findByShadowText('Hello world');
 
-      const factory = document.querySelector<WebComponentFactory>('wc-factory');
+      const factory = document.querySelector<WebComponentFactory>('web-component-factory');
       invariant(factory);
 
       const component = factory.getComponent('my-paragraph-8');
@@ -204,7 +204,7 @@ describe('WebComponentFactory', () => {
         <template id="nerf-herder-ipsum">
           <p>Jar jar binks blaster kylo ren</p>
         </template>
-        <wc-factory #mode="open">
+        <web-component-factory #mode="open">
           <template id="lorem-ipsum">
             <p>Lorem ipsum dolor sit amet</p>
           </template>
@@ -218,7 +218,7 @@ describe('WebComponentFactory', () => {
             #name="nerf-herder-generator"
             #template="#nerf-herder-ipsum"
           ></web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       await fixture(html`
@@ -245,9 +245,9 @@ describe('WebComponentFactory', () => {
       window.addEventListener('error', obj.errorEventHandler);
 
       await fixture(html`
-        <wc-factory #mode="open">
+        <web-component-factory #mode="open">
           <web-component #name="missing-template" #template="#invalid"></web-component>
-        </wc-factory>
+        </web-component-factory>
       `);
 
       expect(spy).toHaveBeenCalled();
