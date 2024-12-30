@@ -11,7 +11,6 @@ export function getCustomElementConstructor(input: {
 
   // TODO: Figure out extending other element types
   return class extends HTMLElement {
-    // TODO: Parameterize observed attributes
     static observedAttributes = [
       ...Object.keys(attributes).filter((key) => attributes[key].observed),
     ];

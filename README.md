@@ -85,7 +85,7 @@ Any other provided attributes are made available to any child custom elements as
 
 Any other provided attributes:
 
-1. Are automatically observed for changes to their values. Value changes will trigger the `attributeChangedCallback` if provided.
+1. Are automatically observed for changes to their values. Value changes will trigger the `attributeChangedCallback` if provided. This behavior can be overriden. See [Attribute Observability](#attribute-observability).
 1. Are made available as expression placeholders.
 1. Can override any attribute of the same name specified on the parent `<web-component-factory>`.
 
@@ -114,7 +114,7 @@ For example, the `area` attribute on the `<web-component>` overrides the attribu
 
 A `<web-component>` will use a `<template>` to populate its shadow DOM by providing its selector as the value of its `#template` attribute e.g. `<web-component #name="my-component" #template="#my-template">`.
 
-A `<template>` can be defined at multiple levels in the DOM tree. When a template selector could match multiple elements, the matching precedence order is when the `<template>` exists:
+A `<template>` can be defined at multiple levels in the DOM tree. When a template selector could match multiple elements, the matching precedence order is as follows. When the `<template>` exists:
 
 1. As a direct child of a `<web-component>`.
 1. As a direct child of the `<web-component-factory>`.
@@ -242,6 +242,137 @@ on mouseup:
 <!-- console logs:
   disconnectedCallback
 -->
+```
+
+## Attribute Observability
+
+By default, all attributes are observed for changes. In the below example, any change to `name` and `age` will each trigger the `attributeChanged` lifecycle callback.
+
+```html
+<web-component-factory age="AGE MISSING">
+  <web-component #name="welcome-text" name="NAME MISSING">
+    <p>Welcome {name}! I hear you are {age} years old.</p>
+
+    <script type="lifecycle" callback="attributeChanged">
+      function attributeChangedCallback(name, oldValue, newValue) {
+        console.log(`name: ${oldValue} -> ${newValue}`);
+      }
+    </script>
+  </web-component>
+</web-component-factory>
+
+<welcome-text
+  name="Andy"
+  age="40"
+  onmousedown="this.setAttribute('name', 'Joe'); this.setAttribute('age', '50');"
+>
+</welcome-text>
+```
+
+Clicking on the text will update the shadow DOM and write to the console.
+
+```html
+<welcome-text>
+  <p>Welcome Joe! I hear you are 50 years old.</p>
+</welcome-text>
+
+<!-- console logs:
+  name: Andy -> Joe
+  name: 40 -> 50
+-->
+```
+
+The default observability of attributes can be overridden by providing `<attribute>` child elements to both the `<web-component-factory>` and `<web-component>` elements.
+
+The rules for this logic is as follows:
+
+- Specific attributes can be _excluded_ from being observed using `<attribute observed="false">`. All other attributes will remain observed by default. In the example below `name` will not be observed, but `age` still will be.
+
+```html
+<web-component-factory>
+  <web-component #name="welcome-text" name="NAME MISSING" age="AGE MISSING">
+    <attribute name="name" observed="false"></attribute>
+    <p>Welcome {name}! I hear you are {age} years old.</p>
+  </web-component>
+</web-component-factory>
+
+<welcome-text
+  name="Andy"
+  age="40"
+  onmousedown="this.setAttribute('name', 'Joe'); this.setAttribute('age', '50');"
+>
+</welcome-text>
+```
+
+- Specific attributes can be set to _only_ be observed using `<attribute observed="true">`. All other attributes will _no longer_ be observed by default. In the example below, only `name` will be observed. `age` will not.
+
+```html
+<web-component-factory>
+  <web-component #name="welcome-text" name="NAME MISSING" age="AGE MISSING">
+    <attribute name="name" observed="true"></attribute>
+    <p>Welcome {name}! I hear you are {age} years old.</p>
+  </web-component>
+</web-component-factory>
+
+<welcome-text
+  name="Andy"
+  age="40"
+  onmousedown="this.setAttribute('name', 'Joe'); this.setAttribute('age', '50');"
+>
+</welcome-text>
+```
+
+- An error will be thrown if all `<attribute>` elements do not have the same value for their `observed` attributes. The below example is invalid.
+
+```html
+<web-component #name="welcome-text" name="NAME MISSING" age="AGE MISSING">
+  <!-- THIS WILL THROW AN ERROR -->
+  <attribute name="name" observed="true"></attribute>
+  <attribute name="age" observed="false"></attribute>
+  <!-- THIS WILL THROW AN ERROR -->
+  <p>Welcome {name}! I hear you are {age} years old.</p>
+</web-component>
+```
+
+- `<attribute>` elements that are children of `<web-component>` take precedence over those that are children of `<web-component-factory>`. In the example below, `age` is only observed in `<welcome-text>`, not `<goodybe-text>`. `name` is observed in both custom elements.
+
+```html
+<web-component-factory age="AGE MISSING" name="NAME MISSING">
+  <attribute name="age" observed="false"></attribute>
+  <web-component #name="welcome-text">
+    <attribute name="age" observed="true"></attribute>
+    <p>Welcome {name}! I hear you are {age} years old.</p>
+  </web-component>
+
+  <web-component #name="goodbye-text">
+    <p>Goodbye {name}! Last I heard you were {age} years old.</p>
+  </web-component>
+</web-component-factory>
+
+<welcome-text
+  name="Andy"
+  age="40"
+  onmousedown="this.setAttribute('name', 'Joe'); this.setAttribute('age', '50');"
+>
+</welcome-text>
+
+<goodbye-text
+  name="Andy"
+  age="40"
+  onmousedown="this.setAttribute('name', 'Joe'); this.setAttribute('age', '50');"
+>
+</goodbye-text>
+```
+
+```html
+<!-- After clicking each element... -->
+<welcome-text>
+  <p>Welcome Joe! I hear you are 50 years old.</p>
+</welcome-text>
+
+<goodbye-text>
+  <p>Goodbye Joe! Last I heard you were 40 years old.</p>
+</goodbye-text>
 ```
 
 ## API

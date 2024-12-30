@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { Component } from './components/webComponentFactory';
 import { CustomComponentBuilder } from './customComponentBuilder';
-import { Attribute } from './getDynamicAttributes';
+import { Attribute, getDynamicAttributes } from './getDynamicAttributes';
 import {
   getLifecycleNameOrThrow,
   getShadowRootModeOrThrow,
@@ -60,13 +60,20 @@ export function getWebComponent(input: {
   }
 
   function getAttributes(): Record<string, Attribute> {
-    return [...element.attributes].reduce<Record<string, Attribute>>(
+    const attributes = [...element.attributes].reduce<Record<string, Attribute>>(
       (acc, attribute) => {
-        acc[attribute.name] = { value: attribute.value, observed: true };
+        if (acc[attribute.name]) {
+          acc[attribute.name].value = attribute.value;
+        } else {
+          acc[attribute.name] = { value: attribute.value, observed: true };
+        }
+
         return acc;
       },
       structuredClone(globalAttributes) ?? {},
     );
+
+    return getDynamicAttributes(element, attributes);
   }
 
   function getChild(): Element | undefined {
