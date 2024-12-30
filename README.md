@@ -83,7 +83,8 @@ Any other provided attributes are made available to any child custom elements as
 
 Any other provided attributes:
 
-1. Are automatically observed for changes to their values. Value changes will trigger the `attributeChangedCallback` if provided. This behavior can be overriden. See [Attribute Observability](#attribute-observability).
+1. Are automatically observed for changes to their values. Value changes will trigger the `attributeChangedCallback` if provided. This behavior can be overriden. See
+   [Attribute Observability](#attribute-observability).
 1. Are made available as expression placeholders.
 1. Can override any attribute of the same name specified on the parent `<web-component-factory>`.
 
@@ -110,7 +111,8 @@ For example, the `area` attribute on the `<web-component>` overrides the attribu
 
 `<template>` elements work almost exactly the same as they do conventionally, with a few minor differences.
 
-A `<web-component>` will use a `<template>` to populate its shadow DOM by providing its selector as the value of its `#template` attribute e.g. `<web-component #name="my-component" #template="#my-template">`.
+A `<web-component>` will use a `<template>` to populate its shadow DOM by providing its selector as the value of its `#template` attribute e.g.
+`<web-component #name="my-component" #template="#my-template">`.
 
 A `<template>` can be defined at multiple levels in the DOM tree. When a template selector could match multiple elements, the matching precedence order is as follows. When the `<template>` exists:
 
@@ -162,7 +164,8 @@ For example:
 
 ## Lifecycle callbacks
 
-[Custom element lifecycle callbacks](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks) can be specified directly in the markup. The `function` names must match exactly as in the below example.
+[Custom element lifecycle callbacks](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#custom_element_lifecycle_callbacks) can be specified directly in the markup.
+The `function` names must match exactly as in the below example.
 
 ```html
 <web-component-factory>
@@ -284,7 +287,8 @@ The default observability of attributes can be overridden by providing `<attribu
 
 The rules for this logic is as follows:
 
-- Specific attributes can be _excluded_ from being observed using `<attribute observed="false">`. All other attributes will remain observed by default. In the example below `name` will not be observed, but `age` still will be.
+- Specific attributes can be _excluded_ from being observed using `<attribute observed="false">`. All other attributes will remain observed by default. In the example below `name` will not be
+  observed, but `age` still will be.
 
 ```html
 <web-component-factory>
@@ -302,7 +306,8 @@ The rules for this logic is as follows:
 </welcome-text>
 ```
 
-- Specific attributes can be set to _only_ be observed using `<attribute observed="true">`. All other attributes will _no longer_ be observed by default. In the example below, only `name` will be observed. `age` will not.
+- Specific attributes can be set to _only_ be observed using `<attribute observed="true">`. All other attributes will _no longer_ be observed by default. In the example below, only `name` will be
+  observed. `age` will not.
 
 ```html
 <web-component-factory>
@@ -332,7 +337,8 @@ The rules for this logic is as follows:
 </web-component>
 ```
 
-- `<attribute>` elements that are children of `<web-component>` take precedence over those that are children of `<web-component-factory>`. In the example below, `age` is only observed in `<welcome-text>`, not `<goodbye-text>`. `name` is observed in both custom elements.
+- `<attribute>` elements that are children of `<web-component>` take precedence over those that are children of `<web-component-factory>`. In the example below, `age` is only observed in
+  `<welcome-text>`, not `<goodbye-text>`. `name` is observed in both custom elements.
 
 ```html
 <web-component-factory age="AGE MISSING" name="NAME MISSING">
@@ -412,4 +418,52 @@ new WebComponentFactory()
 <!-- console logs:
   👋
 -->
+```
+
+## Advanced example
+
+Let's take the example from [MDN's article on templates and slots](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots#a_more_involved_example).
+
+I've omitted the `<style>` tag in the `<template>` for brevity but you can see the end result is equivalent.
+
+```html
+<web-component-factory #mode="open">
+  <web-component #name="element-details" #template="#element-details-template"></web-component>
+
+  <template id="element-details-template">
+    <details>
+      <summary>
+        <span>
+          <code class="name">&lt;<slot name="element-name">NEED NAME</slot>&gt;</code>
+          <span class="desc"><slot name="description">NEED DESCRIPTION</slot></span>
+        </span>
+      </summary>
+      <div class="attributes">
+        <h4><span>Attributes</span></h4>
+        <slot name="attributes"><p>None</p></slot>
+      </div>
+    </details>
+    <hr />
+  </template>
+</web-component-factory>
+
+<element-details>
+  <span slot="element-name">slot</span>
+  <span slot="description"
+    >A placeholder inside a web component that users can fill with their own markup, with the effect
+    of composing different DOM trees together.</span
+  >
+  <dl slot="attributes">
+    <dt>name</dt>
+    <dd>The name of the slot.</dd>
+  </dl>
+</element-details>
+
+<element-details>
+  <span slot="element-name">template</span>
+  <span slot="description"
+    >A mechanism for holding client- side content that is not to be rendered when a page is loaded
+    but may subsequently be instantiated during runtime using JavaScript.</span
+  >
+</element-details>
 ```
