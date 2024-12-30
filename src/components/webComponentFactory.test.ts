@@ -266,7 +266,7 @@ describe('WebComponentFactory', () => {
       new WebComponentFactory()
         .getComponentBuilder('my-span-2')
         .setMode('open')
-        .setAttributes({ text: 'Hello World!' })
+        .setAttributes({ text: { value: 'Hello World!', observed: true } })
         .setLifecycleCallback('connected', () => console.log('connectedCallback'))
         .setChildElement(child)
         .build();
@@ -339,7 +339,7 @@ describe('WebComponentFactory', () => {
       factory
         .getComponentBuilder('my-span-4')
         .setMode('open')
-        .setAttributes({ text: 'Hello World!' })
+        .setAttributes({ text: { value: 'Hello World!', observed: true } })
         .setChildElement(child)
         .addTemplate(template)
         .build();

@@ -1,6 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { Component } from './components/webComponentFactory';
 import { CustomComponentBuilder } from './customComponentBuilder';
+import { Attribute } from './getDynamicAttributes';
 import {
   getLifecycleNameOrThrow,
   getShadowRootModeOrThrow,
@@ -10,7 +11,7 @@ import {
 export function getWebComponent(input: {
   element: Element;
   defaultMode: string;
-  globalAttributes?: Record<string, string>;
+  globalAttributes?: Record<string, Attribute>;
 }): Component {
   const { element, defaultMode, globalAttributes } = input;
 
@@ -58,13 +59,13 @@ export function getWebComponent(input: {
     return callbacks;
   }
 
-  function getAttributes(): Record<string, string> {
-    return [...element.attributes].reduce<Record<string, string>>(
+  function getAttributes(): Record<string, Attribute> {
+    return [...element.attributes].reduce<Record<string, Attribute>>(
       (acc, attribute) => {
-        acc[attribute.name] = attribute.value;
+        acc[attribute.name] = { value: attribute.value, observed: true };
         return acc;
       },
-      { ...globalAttributes },
+      structuredClone(globalAttributes) ?? {},
     );
   }
 

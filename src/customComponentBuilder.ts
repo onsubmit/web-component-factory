@@ -1,13 +1,14 @@
 import { componentRegistry } from './componentRegistry';
 import { Component } from './components/webComponentFactory';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
+import { Attribute } from './getDynamicAttributes';
 import { LifecycleCallback, LifecycleCallbacks, LifecycleName } from './webComponents';
 
 export class CustomComponentBuilder {
   private _name: string;
   private _mode: ShadowRootMode;
   private _child: Element | undefined;
-  private _attributes: Map<string, string>;
+  private _attributes: Map<string, Attribute>;
   private _lifecycles: Partial<LifecycleCallbacks>;
 
   constructor(name: string) {
@@ -22,14 +23,14 @@ export class CustomComponentBuilder {
     return this;
   };
 
-  setAttribute = (name: string, value: string): this => {
-    this._attributes.set(name, value);
+  setAttribute = (name: string, attribute: Attribute): this => {
+    this._attributes.set(name, attribute);
     return this;
   };
 
-  setAttributes = (attributes: Record<string, string>): this => {
-    for (const [name, value] of Object.entries(attributes)) {
-      this.setAttribute(name, value);
+  setAttributes = (attributes: Record<string, Attribute>): this => {
+    for (const [name, attribute] of Object.entries(attributes)) {
+      this.setAttribute(name, attribute);
     }
 
     return this;

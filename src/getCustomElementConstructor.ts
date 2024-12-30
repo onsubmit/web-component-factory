@@ -1,8 +1,8 @@
-import { getDynamicAttributes } from './getDynamicAttributes';
+import { Attribute, getDynamicAttributes } from './getDynamicAttributes';
 import { LifecycleCallbacks } from './webComponents';
 
 export function getCustomElementConstructor(input: {
-  attributes: Record<string, string>;
+  attributes: Record<string, Attribute>;
   lifecycles: Partial<LifecycleCallbacks>;
   template: Element | undefined;
   mode: ShadowRootMode;
@@ -11,7 +11,10 @@ export function getCustomElementConstructor(input: {
 
   // TODO: Figure out extending other element types
   return class extends HTMLElement {
-    static observedAttributes = [...Object.keys(attributes)];
+    // TODO: Parameterize observed attributes
+    static observedAttributes = [
+      ...Object.keys(attributes).filter((key) => attributes[key].observed),
+    ];
 
     private _shadowRoot: ShadowRoot;
     private _templateHtml: string;
@@ -49,7 +52,7 @@ export function getCustomElementConstructor(input: {
         return;
       }
 
-      this._attributes[name] = newValue;
+      this._attributes[name].value = newValue;
       this._shadowRoot.innerHTML = this._getInnerHtmlWithAttributes();
     }
 
@@ -57,7 +60,7 @@ export function getCustomElementConstructor(input: {
       const div = document.createElement('div');
       div.innerHTML = this._templateHtml;
 
-      for (const [key, value] of Object.entries(this._attributes)) {
+      for (const [key, { value }] of Object.entries(this._attributes)) {
         div.innerHTML = div.innerHTML.replaceAll(`{${key}}`, value);
       }
 

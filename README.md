@@ -264,7 +264,7 @@ span.textContent = '{text}';
 new WebComponentFactory()
   .getComponentBuilder('welcome-message')
   .setMode('open')
-  .setAttribute('text', 'Default message')
+  .setAttribute('text', { value: 'Default message', observed: true })
   .setLifecycleCallback('connected', () => console.log('👋'))
   .setChildElement(span)
   .build();
