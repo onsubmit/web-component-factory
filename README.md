@@ -332,7 +332,7 @@ The rules for this logic is as follows:
 </web-component>
 ```
 
-- `<attribute>` elements that are children of `<web-component>` take precedence over those that are children of `<web-component-factory>`. In the example below, `age` is only observed in `<welcome-text>`, not `<goodybe-text>`. `name` is observed in both custom elements.
+- `<attribute>` elements that are children of `<web-component>` take precedence over those that are children of `<web-component-factory>`. In the example below, `age` is only observed in `<welcome-text>`, not `<goodbye-text>`. `name` is observed in both custom elements.
 
 ```html
 <web-component-factory age="AGE MISSING" name="NAME MISSING">
