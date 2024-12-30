@@ -47,7 +47,6 @@ customElements.define('my-custom-element', MyCustomElement);
 | Name    | Values           | Default value | Description                                                  |
 | ------- | ---------------- | ------------- | ------------------------------------------------------------ |
 | `#mode` | `closed \| open` | `closed`      | The default `ShadowRoot` mode for all child custom elements. |
-|         |                  |               |                                                              |
 
 Any other provided attributes are made available to any child custom elements as expression placeholders e.g. `{area}` becomes `400` in the example below.
 
@@ -81,7 +80,6 @@ Any other provided attributes are made available to any child custom elements as
 | `#name`     | [A valid custom element name](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define#valid_custom_element_names) | -             | The name for the new custom element.                                                                                |
 | `#mode`     | `closed \| open`                                                                                                                        | `closed`      | The `ShadowRoot` mode for the new custom element. Overrides the value specified on `<web-component-factory #mode>`. |
 | `#template` | A valid CSS selector that matches a `<template>` element                                                                                | -             | The CSS selector for the `<template>` element to populate the shadow DOM of the web component.                      |
-|             |                                                                                                                                         |               |                                                                                                                     |
 
 Any other provided attributes:
 
