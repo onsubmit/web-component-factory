@@ -283,7 +283,7 @@ Clicking on the text will update the shadow DOM and write to the console.
 -->
 ```
 
-The default observability of attributes can be overridden by providing `<attribute>` child elements to both the `<web-component-factory>` and `<web-component>` elements.
+The default observability of attributes can be overridden by providing `<attribute>` child elements to the `<web-component-factory>` and/or `<web-component>` elements.
 
 The rules for this logic is as follows:
 

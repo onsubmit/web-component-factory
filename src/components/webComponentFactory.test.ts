@@ -256,6 +256,143 @@ describe('WebComponentFactory', () => {
 
       window.removeEventListener('error', obj.errorEventHandler);
     });
+
+    it('should exclude an attribute from being observed', async () => {
+      await fixture(html`
+        <web-component-factory #mode="open">
+          <web-component #name="welcome-text-1" name="NAME MISSING" age="AGE MISSING">
+            <attribute name="name" observed="false"></attribute>
+            <p>Welcome {name}! I hear you are {age} years old.</p>
+          </web-component>
+        </web-component-factory>
+      `);
+
+      await fixture(html`<welcome-text-1 name="Andy" age="40"></welcome-text-1>`);
+      await screen.findByShadowText('Welcome Andy! I hear you are 40 years old.');
+
+      const welcomeText = document.querySelector('welcome-text-1');
+      invariant(welcomeText);
+
+      // "name" attribute is not observed
+      welcomeText.setAttribute('name', 'Joe');
+      await screen.findByShadowText('Welcome Andy! I hear you are 40 years old.');
+
+      // "age" attribute is still observed
+      welcomeText.setAttribute('age', '50');
+      await screen.findByShadowText('Welcome Andy! I hear you are 50 years old.');
+    });
+
+    it('should only observe a single attribute', async () => {
+      await fixture(html`
+        <web-component-factory #mode="open">
+          <web-component #name="welcome-text-2" name="NAME MISSING" age="AGE MISSING">
+            <attribute name="name" observed="true"></attribute>
+            <p>Welcome {name}! I hear you are {age} years old.</p>
+          </web-component>
+        </web-component-factory>
+      `);
+
+      await fixture(html`<welcome-text-2 name="Andy" age="40"></welcome-text-2>`);
+      await screen.findByShadowText('Welcome Andy! I hear you are 40 years old.');
+
+      const welcomeText = document.querySelector('welcome-text-2');
+      invariant(welcomeText);
+
+      // "name" attribute is observed
+      welcomeText.setAttribute('name', 'Joe');
+      await screen.findByShadowText('Welcome Joe! I hear you are 40 years old.');
+
+      // "age" attribute is not observed
+      welcomeText.setAttribute('age', '50');
+      await screen.findByShadowText('Welcome Joe! I hear you are 40 years old.');
+    });
+
+    it('should throw if <attribute> elements have different values', async () => {
+      let errorEvent: ErrorEvent | undefined;
+
+      const errorEventHandler: ErrorEventHandler = (event) => {
+        event.preventDefault();
+        errorEvent = event;
+      };
+
+      const obj = { errorEventHandler };
+      const spy = vi.spyOn(obj, 'errorEventHandler');
+      window.addEventListener('error', obj.errorEventHandler);
+
+      await fixture(html`
+        <web-component-factory #mode="open">
+          <web-component #name="welcome-text-3" name="NAME MISSING" age="AGE MISSING">
+            <attribute name="name" observed="true"></attribute>
+            <attribute name="age" observed="false"></attribute>
+            <p>Welcome {name}! I hear you are {age} years old.</p>
+          </web-component>
+        </web-component-factory>
+      `);
+
+      expect(spy).toHaveBeenCalled();
+      invariant(errorEvent);
+      expect(errorEvent.message).toBe(
+        '<attribute> children must all have the same value for their observed attribute',
+      );
+
+      window.removeEventListener('error', obj.errorEventHandler);
+    });
+
+    it('should throw if <attribute> element is missing its name attribute', async () => {
+      let errorEvent: ErrorEvent | undefined;
+
+      const errorEventHandler: ErrorEventHandler = (event) => {
+        event.preventDefault();
+        errorEvent = event;
+      };
+
+      const obj = { errorEventHandler };
+      const spy = vi.spyOn(obj, 'errorEventHandler');
+      window.addEventListener('error', obj.errorEventHandler);
+
+      await fixture(html`
+        <web-component-factory #mode="open">
+          <web-component #name="welcome-text-4" name="NAME MISSING" age="AGE MISSING">
+            <attribute observed="true"></attribute>
+            <p>Welcome {name}! I hear you are {age} years old.</p>
+          </web-component>
+        </web-component-factory>
+      `);
+
+      expect(spy).toHaveBeenCalled();
+      invariant(errorEvent);
+      expect(errorEvent.message).toBe('<attribute> must have a "name" attribute.');
+
+      window.removeEventListener('error', obj.errorEventHandler);
+    });
+
+    it('should throw if <attribute> element has an invalid name attribute', async () => {
+      let errorEvent: ErrorEvent | undefined;
+
+      const errorEventHandler: ErrorEventHandler = (event) => {
+        event.preventDefault();
+        errorEvent = event;
+      };
+
+      const obj = { errorEventHandler };
+      const spy = vi.spyOn(obj, 'errorEventHandler');
+      window.addEventListener('error', obj.errorEventHandler);
+
+      await fixture(html`
+        <web-component-factory #mode="open">
+          <web-component #name="welcome-text-4" name="NAME MISSING" age="AGE MISSING">
+            <attribute name="hotdog" observed="true"></attribute>
+            <p>Welcome {name}! I hear you are {age} years old.</p>
+          </web-component>
+        </web-component-factory>
+      `);
+
+      expect(spy).toHaveBeenCalled();
+      invariant(errorEvent);
+      expect(errorEvent.message).toBe('Could not find attribute with name "hotdog".');
+
+      window.removeEventListener('error', obj.errorEventHandler);
+    });
   });
 
   describe('programmatic', () => {

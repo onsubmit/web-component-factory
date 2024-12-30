@@ -73,7 +73,7 @@ function updateObserved(
     }
 
     if (!attributes[name]) {
-      console.warn(`Could not find attribute with name ${name}`);
+      throw new Error(`Could not find attribute with name "${name}".`);
     } else {
       attributes[name].observed = observed;
     }

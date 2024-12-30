@@ -62,12 +62,7 @@ export function getWebComponent(input: {
   function getAttributes(): Record<string, Attribute> {
     const attributes = [...element.attributes].reduce<Record<string, Attribute>>(
       (acc, attribute) => {
-        if (acc[attribute.name]) {
-          acc[attribute.name].value = attribute.value;
-        } else {
-          acc[attribute.name] = { value: attribute.value, observed: true };
-        }
-
+        acc[attribute.name] = { value: attribute.value, observed: true };
         return acc;
       },
       structuredClone(globalAttributes) ?? {},
