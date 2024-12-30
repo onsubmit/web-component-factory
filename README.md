@@ -276,7 +276,7 @@ Clicking on the text will update the shadow DOM and write to the console.
 
 <!-- console logs:
   name: Andy -> Joe
-  name: 40 -> 50
+  age: 40 -> 50
 -->
 ```
 
