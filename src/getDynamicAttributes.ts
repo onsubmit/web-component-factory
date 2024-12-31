@@ -5,15 +5,15 @@ export type Attribute = {
 
 export function getDynamicAttributes(
   element: Element,
-  globalAttributes?: Record<string, Attribute>,
-): Record<string, Attribute> {
-  const attributes = structuredClone(globalAttributes) ?? {};
+  globalAttributes?: Map<string, Attribute>,
+): Map<string, Attribute> {
+  const attributes = structuredClone(globalAttributes) ?? new Map<string, Attribute>();
 
   for (const attribute of element.attributes) {
-    if (attributes[attribute.name]) {
-      attributes[attribute.name].value = attribute.value;
+    if (attributes.has(attribute.name)) {
+      attributes.get(attribute.name)!.value = attribute.value;
     } else {
-      attributes[attribute.name] = { value: attribute.value, observed: true };
+      attributes.set(attribute.name, { value: attribute.value, observed: true });
     }
   }
 
@@ -21,23 +21,22 @@ export function getDynamicAttributes(
     overrideObserved(element, attributes);
   }
 
-  for (const key1 of Object.keys(attributes)) {
-    for (const key2 of Object.keys(attributes)) {
+  for (const key1 of attributes.keys()) {
+    for (const key2 of attributes.keys()) {
       if (key1 === key2) {
         continue;
       }
 
-      attributes[key1].value = attributes[key1].value.replaceAll(
-        `{${key2}}`,
-        attributes[key2].value,
-      );
+      attributes.get(key1)!.value = attributes
+        .get(key1)!
+        .value.replaceAll(`{${key2}}`, attributes.get(key2)!.value);
     }
   }
 
   return attributes;
 }
 
-function overrideObserved(element: Element, attributes: Record<string, Attribute>): void {
+function overrideObserved(element: Element, attributes: Map<string, Attribute>): void {
   const childAttributes = [...element.children].filter((n) => n.tagName === 'ATTRIBUTE');
   const observedAttributes = childAttributes.filter(
     (n) => n.getAttribute('observed')?.toLowerCase() === 'true',
@@ -54,7 +53,7 @@ function overrideObserved(element: Element, attributes: Record<string, Attribute
 
   const defaultObservedValue = !observedAttributes.length;
   for (const attribute of element.attributes) {
-    attributes[attribute.name] = { value: attribute.value, observed: defaultObservedValue };
+    attributes.set(attribute.name, { value: attribute.value, observed: defaultObservedValue });
   }
 
   updateObserved(attributes, observedAttributes, true);
@@ -62,7 +61,7 @@ function overrideObserved(element: Element, attributes: Record<string, Attribute
 }
 
 function updateObserved(
-  attributes: Record<string, Attribute>,
+  attributes: Map<string, Attribute>,
   elements: Array<Element>,
   observed: boolean,
 ): void {
@@ -72,10 +71,10 @@ function updateObserved(
       throw new Error('<attribute> must have a "name" attribute.');
     }
 
-    if (!attributes[name]) {
+    if (!attributes.has(name)) {
       throw new Error(`Could not find attribute with name "${name}".`);
     } else {
-      attributes[name].observed = observed;
+      attributes.get(name)!.observed = observed;
     }
   }
 }

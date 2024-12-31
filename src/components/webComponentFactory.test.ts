@@ -1,6 +1,7 @@
 import { fixture, html } from '@open-wc/testing-helpers';
 import { screen } from 'shadow-dom-testing-library';
 
+import { Attribute } from '../getDynamicAttributes';
 import invariant from '../test/invariant';
 import { WebComponentFactory } from './webComponentFactory';
 
@@ -403,7 +404,9 @@ describe('WebComponentFactory', () => {
       new WebComponentFactory()
         .getComponentBuilder('my-span-2')
         .setMode('open')
-        .setAttributes({ text: { value: 'Hello World!', observed: true } })
+        .setAttributes(
+          new Map<string, Attribute>([['text', { value: 'Hello World!', observed: true }]]),
+        )
         .setLifecycleCallback('connected', () => console.log('connectedCallback'))
         .setChildElement(child)
         .build();
@@ -476,7 +479,9 @@ describe('WebComponentFactory', () => {
       factory
         .getComponentBuilder('my-span-4')
         .setMode('open')
-        .setAttributes({ text: { value: 'Hello World!', observed: true } })
+        .setAttributes(
+          new Map<string, Attribute>([['text', { value: 'Hello World!', observed: true }]]),
+        )
         .setChildElement(child)
         .addTemplate(template)
         .build();

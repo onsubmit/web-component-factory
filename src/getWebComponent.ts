@@ -11,7 +11,7 @@ import {
 export function getWebComponent(input: {
   element: Element;
   defaultMode: string;
-  globalAttributes?: Record<string, Attribute>;
+  globalAttributes?: Map<string, Attribute>;
 }): Component {
   const { element, defaultMode, globalAttributes } = input;
 
@@ -59,13 +59,13 @@ export function getWebComponent(input: {
     return callbacks;
   }
 
-  function getAttributes(): Record<string, Attribute> {
-    const attributes = [...element.attributes].reduce<Record<string, Attribute>>(
+  function getAttributes(): Map<string, Attribute> {
+    const attributes = [...element.attributes].reduce<Map<string, Attribute>>(
       (acc, attribute) => {
-        acc[attribute.name] = { value: attribute.value, observed: true };
+        acc.set(attribute.name, { value: attribute.value, observed: true });
         return acc;
       },
-      structuredClone(globalAttributes) ?? {},
+      structuredClone(globalAttributes) ?? new Map<string, Attribute>(),
     );
 
     return getDynamicAttributes(element, attributes);

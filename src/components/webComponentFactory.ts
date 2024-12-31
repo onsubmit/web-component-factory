@@ -1,6 +1,6 @@
 import { componentRegistry } from '../componentRegistry';
 import { CustomComponentBuilder } from '../customComponentBuilder';
-import { getDynamicAttributes } from '../getDynamicAttributes';
+import { Attribute, getDynamicAttributes } from '../getDynamicAttributes';
 import { getWebComponent } from '../getWebComponent';
 import { getShadowRootModeOrThrow } from '../webComponents';
 import { WebComponent } from './webComponent';
@@ -58,6 +58,10 @@ export class WebComponentFactory extends WebComponent {
   };
 
   getComponent = (name: string): Component | undefined => componentRegistry.get(name);
+
+  addAttribute = (name: string, attribute: Attribute): void => {
+    this._attributes.set(name, attribute);
+  };
 
   getComponentBuilder = (name: string): CustomComponentBuilder => {
     if (!name) {

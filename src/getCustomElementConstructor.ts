@@ -2,7 +2,7 @@ import { Attribute, getDynamicAttributes } from './getDynamicAttributes';
 import { LifecycleCallbacks } from './webComponents';
 
 export function getCustomElementConstructor(input: {
-  attributes: Record<string, Attribute>;
+  attributes: Map<string, Attribute>;
   lifecycles: Partial<LifecycleCallbacks>;
   template: Element | undefined;
   mode: ShadowRootMode;
@@ -11,9 +11,9 @@ export function getCustomElementConstructor(input: {
 
   // TODO: Figure out extending other element types
   return class extends HTMLElement {
-    static observedAttributes = [
-      ...Object.keys(attributes).filter((key) => attributes[key].observed),
-    ];
+    static observedAttributes = [...attributes.keys()].filter(
+      (key) => attributes.get(key)?.observed ?? false,
+    );
 
     private _shadowRoot: ShadowRoot;
     private _templateHtml: string;
@@ -51,7 +51,11 @@ export function getCustomElementConstructor(input: {
         return;
       }
 
-      this._attributes[name].value = newValue;
+      const attribute = this._attributes.get(name);
+      if (attribute) {
+        attribute.value = newValue;
+      }
+
       this._shadowRoot.innerHTML = this._getInnerHtmlWithAttributes();
     }
 
@@ -59,7 +63,7 @@ export function getCustomElementConstructor(input: {
       const div = document.createElement('div');
       div.innerHTML = this._templateHtml;
 
-      for (const [key, { value }] of Object.entries(this._attributes)) {
+      for (const [key, { value }] of this._attributes.entries()) {
         div.innerHTML = div.innerHTML.replaceAll(`{${key}}`, value);
       }
 

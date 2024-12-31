@@ -2,13 +2,14 @@ import { fixture, html, nextFrame } from '@open-wc/testing-helpers';
 import { screen } from 'shadow-dom-testing-library';
 
 import { getCustomElementConstructor } from './getCustomElementConstructor';
+import { Attribute } from './getDynamicAttributes';
 
 describe('getCustomElementConstructor', () => {
   it('should render a basic component', async () => {
-    const attributes = {
-      name: { value: 'Andy', observed: true },
-      age: { value: '42', observed: true },
-    };
+    const attributes = new Map<string, Attribute>([
+      ['name', { value: 'Andy', observed: true }],
+      ['age', { value: '42', observed: true }],
+    ]);
     const lifecycles = {};
     const mode = 'open';
     const template = document.createElement('p');
@@ -29,10 +30,10 @@ describe('getCustomElementConstructor', () => {
   });
 
   it('should override attributes', async () => {
-    const attributes = {
-      name: { value: 'Andy', observed: true },
-      age: { value: '42', observed: true },
-    };
+    const attributes = new Map<string, Attribute>([
+      ['name', { value: 'Andy', observed: true }],
+      ['age', { value: '42', observed: true }],
+    ]);
     const lifecycles = {};
     const mode = 'open';
     const template = document.createElement('p');
@@ -55,10 +56,10 @@ describe('getCustomElementConstructor', () => {
   it('should hook into lifecycle callbacks', async () => {
     const spy = vi.spyOn(console, 'log');
 
-    const attributes = {
-      name: { value: 'Andy', observed: true },
-      age: { value: '42', observed: true },
-    };
+    const attributes = new Map<string, Attribute>([
+      ['name', { value: 'Andy', observed: true }],
+      ['age', { value: '42', observed: true }],
+    ]);
     const lifecycles = {
       connected: function connectedCallback(): void {
         console.log('connectedCallback');
@@ -112,10 +113,10 @@ describe('getCustomElementConstructor', () => {
   it('should hook into the adopted lifecycle callback', async () => {
     const spy = vi.spyOn(console, 'log');
 
-    const attributes = {
-      name: { value: 'Andy', observed: true },
-      age: { value: '42', observed: true },
-    };
+    const attributes = new Map<string, Attribute>([
+      ['name', { value: 'Andy', observed: true }],
+      ['age', { value: '42', observed: true }],
+    ]);
     const lifecycles = {
       adopted: function adoptedCallback(): void {
         console.log('adoptedCallback');
@@ -148,10 +149,10 @@ describe('getCustomElementConstructor', () => {
   });
 
   it('should use a closed shadow root mode', async () => {
-    const attributes = {
-      name: { value: 'Andy', observed: true },
-      age: { value: '42', observed: true },
-    };
+    const attributes = new Map<string, Attribute>([
+      ['name', { value: 'Andy', observed: true }],
+      ['age', { value: '42', observed: true }],
+    ]);
     const lifecycles = {};
     const mode = 'closed';
     const template = document.createElement('p');

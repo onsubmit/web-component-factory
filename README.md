@@ -392,14 +392,14 @@ The below example will:
 1. Its shadow root consists of a `<span>` element with text the value of the `text` attribute.
 1. The instance of the element provides "Welcome, friend!" for the value of the `text` attribute.
 
-```js
+```ts
 const span = document.createElement('span');
 span.textContent = '{text}';
 
 new WebComponentFactory()
   .getComponentBuilder('welcome-message')
   .setMode('open')
-  .setAttribute('text', { value: 'Default message', observed: true })
+  .setAttributes(new Map<string, Attribute>([['text', { value: 'Hello World!', observed: true }]]))
   .setLifecycleCallback('connected', () => console.log('👋'))
   .setChildElement(span)
   .build();

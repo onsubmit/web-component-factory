@@ -28,8 +28,8 @@ export class CustomComponentBuilder {
     return this;
   };
 
-  setAttributes = (attributes: Record<string, Attribute>): this => {
-    for (const [name, attribute] of Object.entries(attributes)) {
+  setAttributes = (attributes: Map<string, Attribute>): this => {
+    for (const [name, attribute] of attributes.entries()) {
       this.setAttribute(name, attribute);
     }
 
@@ -67,7 +67,7 @@ export class CustomComponentBuilder {
     const component = {
       constructor: getCustomElementConstructor({
         lifecycles: this._lifecycles,
-        attributes: Object.fromEntries(this._attributes),
+        attributes: this._attributes,
         template: this._child,
         mode: this._mode,
       }),
