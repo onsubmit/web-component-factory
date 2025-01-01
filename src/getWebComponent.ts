@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { Component } from './components/webComponentFactory';
 import { CustomComponentBuilder } from './customComponentBuilder';
-import { Attribute, getDynamicAttributes } from './getDynamicAttributes';
+import { DynamicAttributes } from './dynamicAttributes';
 import {
   getLifecycleNameOrThrow,
   getShadowRootModeOrThrow,
@@ -11,9 +11,9 @@ import {
 export function getWebComponent(input: {
   element: Element;
   defaultMode: string;
-  globalAttributes?: Map<string, Attribute>;
+  initial?: DynamicAttributes;
 }): Component {
-  const { element, defaultMode, globalAttributes } = input;
+  const { element, defaultMode, initial } = input;
 
   const name = element.getAttribute('#name');
   if (!name) {
@@ -27,7 +27,7 @@ export function getWebComponent(input: {
   return new CustomComponentBuilder(name)
     .setMode(getShadowRootMode())
     .setLifecycleCallbacks(extractLifecycles())
-    .setAttributes(getAttributes())
+    .setAttributes(new DynamicAttributes({ element, initial }))
     .setChildElement(getChild())
     .build();
 
@@ -57,18 +57,6 @@ export function getWebComponent(input: {
     }
 
     return callbacks;
-  }
-
-  function getAttributes(): Map<string, Attribute> {
-    const attributes = [...element.attributes].reduce<Map<string, Attribute>>(
-      (acc, attribute) => {
-        acc.set(attribute.name, { value: attribute.value, observed: true });
-        return acc;
-      },
-      structuredClone(globalAttributes) ?? new Map<string, Attribute>(),
-    );
-
-    return getDynamicAttributes(element, attributes);
   }
 
   function getChild(): Element | undefined {

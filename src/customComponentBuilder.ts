@@ -1,20 +1,20 @@
 import { componentRegistry } from './componentRegistry';
 import { Component } from './components/webComponentFactory';
+import { DynamicAttributes } from './dynamicAttributes';
 import { getCustomElementConstructor } from './getCustomElementConstructor';
-import { Attribute } from './getDynamicAttributes';
 import { LifecycleCallback, LifecycleCallbacks, LifecycleName } from './webComponents';
 
 export class CustomComponentBuilder {
   private _name: string;
   private _mode: ShadowRootMode;
   private _child: Element | undefined;
-  private _attributes: Map<string, Attribute>;
+  private _attributes: DynamicAttributes;
   private _lifecycles: Partial<LifecycleCallbacks>;
 
-  constructor(name: string) {
+  constructor(name: string, initial?: DynamicAttributes) {
     this._name = name;
     this._mode = 'closed';
-    this._attributes = new Map();
+    this._attributes = new DynamicAttributes({ initial });
     this._lifecycles = {};
   }
 
@@ -23,16 +23,35 @@ export class CustomComponentBuilder {
     return this;
   };
 
-  setAttribute = (name: string, attribute: Attribute): this => {
-    this._attributes.set(name, attribute);
+  setAttribute = (name: string, value: string): this => {
+    if (!name) {
+      throw new Error('A non-empty "name" is required');
+    }
+
+    this._attributes.set(name, value);
     return this;
   };
 
-  setAttributes = (attributes: Map<string, Attribute>): this => {
+  setAttributes = (attributes: DynamicAttributes): this => {
     for (const [name, attribute] of attributes.entries()) {
-      this.setAttribute(name, attribute);
+      this._attributes.set(name, attribute.value);
+      if (attribute.observed) {
+        this.observeAttribute(name);
+      } else {
+        this.ignoreAttribute(name);
+      }
     }
 
+    return this;
+  };
+
+  observeAttribute = (name: string): this => {
+    this._attributes.observe(name);
+    return this;
+  };
+
+  ignoreAttribute = (name: string): this => {
+    this._attributes.ignore(name);
     return this;
   };
 

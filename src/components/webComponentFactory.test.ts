@@ -1,7 +1,6 @@
 import { fixture, html } from '@open-wc/testing-helpers';
 import { screen } from 'shadow-dom-testing-library';
 
-import { Attribute } from '../getDynamicAttributes';
 import invariant from '../test/invariant';
 import { WebComponentFactory } from './webComponentFactory';
 
@@ -404,9 +403,7 @@ describe('WebComponentFactory', () => {
       new WebComponentFactory()
         .getComponentBuilder('my-span-2')
         .setMode('open')
-        .setAttributes(
-          new Map<string, Attribute>([['text', { value: 'Hello World!', observed: true }]]),
-        )
+        .setAttribute('text', 'Hello World!')
         .setLifecycleCallback('connected', () => console.log('connectedCallback'))
         .setChildElement(child)
         .build();
@@ -479,9 +476,7 @@ describe('WebComponentFactory', () => {
       factory
         .getComponentBuilder('my-span-4')
         .setMode('open')
-        .setAttributes(
-          new Map<string, Attribute>([['text', { value: 'Hello World!', observed: true }]]),
-        )
+        .setAttribute('text', 'Hello World!')
         .setChildElement(child)
         .addTemplate(template)
         .build();
@@ -495,6 +490,34 @@ describe('WebComponentFactory', () => {
       expect(() => new WebComponentFactory().addComponent(span)).toThrow(
         'Element must be a <web-component>. Found: "SPAN".',
       );
+    });
+
+    it('should exclude an attribute from being observed', async () => {
+      const child = document.createElement('p');
+      child.textContent = 'Welcome {name}! I hear you are {age} years old.';
+
+      new WebComponentFactory()
+        .getComponentBuilder('welcome-text-5')
+        .setMode('open')
+        .setAttribute('name', 'NAME MISSING')
+        .ignoreAttribute('name')
+        .setAttribute('age', 'AGE MISSING')
+        .setChildElement(child)
+        .build();
+
+      await fixture(html`<welcome-text-5 name="Andy" age="40"></welcome-text-1>`);
+      await screen.findByShadowText('Welcome Andy! I hear you are 40 years old.');
+
+      const welcomeText = document.querySelector('welcome-text-5');
+      invariant(welcomeText);
+
+      // "name" attribute is not observed
+      welcomeText.setAttribute('name', 'Joe');
+      await screen.findByShadowText('Welcome Andy! I hear you are 40 years old.');
+
+      // "age" attribute is still observed
+      welcomeText.setAttribute('age', '50');
+      await screen.findByShadowText('Welcome Andy! I hear you are 50 years old.');
     });
   });
 });

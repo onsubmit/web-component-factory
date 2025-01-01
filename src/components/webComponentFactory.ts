@@ -1,6 +1,6 @@
 import { componentRegistry } from '../componentRegistry';
 import { CustomComponentBuilder } from '../customComponentBuilder';
-import { Attribute, getDynamicAttributes } from '../getDynamicAttributes';
+import { DynamicAttributes } from '../dynamicAttributes';
 import { getWebComponent } from '../getWebComponent';
 import { getShadowRootModeOrThrow } from '../webComponents';
 import { WebComponent } from './webComponent';
@@ -15,7 +15,7 @@ const otherAllowedChildren = ['TEMPLATE'];
 export class WebComponentFactory extends WebComponent {
   static observedAttributes = [];
 
-  private _attributes = getDynamicAttributes(this);
+  private _attributes = new DynamicAttributes({ element: this });
 
   constructor() {
     super();
@@ -36,7 +36,7 @@ export class WebComponentFactory extends WebComponent {
         getWebComponent({
           element: child,
           defaultMode: this.mode,
-          globalAttributes: this._attributes,
+          initial: this._attributes,
         });
       } else if (!otherAllowedChildren.includes(child.tagName)) {
         this.removeChild(child);
@@ -54,13 +54,17 @@ export class WebComponentFactory extends WebComponent {
     }
 
     this.appendChild(element);
-    getWebComponent({ element, defaultMode: this.mode, globalAttributes: this._attributes });
+    getWebComponent({ element, defaultMode: this.mode, initial: this._attributes });
   };
 
   getComponent = (name: string): Component | undefined => componentRegistry.get(name);
 
-  addAttribute = (name: string, attribute: Attribute): void => {
-    this._attributes.set(name, attribute);
+  observeAttribute = (name: string): void => {
+    this._updateAttribute(name, true);
+  };
+
+  ignoreAttribute = (name: string): void => {
+    this._updateAttribute(name, false);
   };
 
   getComponentBuilder = (name: string): CustomComponentBuilder => {
@@ -72,6 +76,18 @@ export class WebComponentFactory extends WebComponent {
       throw new Error(`Component "${name}" already exists`);
     }
 
-    return new CustomComponentBuilder(name);
+    return new CustomComponentBuilder(name, this._attributes);
+  };
+
+  private _updateAttribute = (name: string, observed: boolean): void => {
+    if (!name) {
+      throw new Error('A non-empty "name" is required');
+    }
+
+    if (observed) {
+      this._attributes.observe(name);
+    } else {
+      this._attributes.ignore(name);
+    }
   };
 }
