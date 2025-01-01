@@ -399,7 +399,7 @@ span.textContent = '{text}';
 new WebComponentFactory()
   .getComponentBuilder('welcome-message')
   .setMode('open')
-  .setAttributes(new Map<string, Attribute>([['text', { value: 'Hello World!', observed: true }]]))
+  .setAttribute('text', 'Hello World!')
   .setLifecycleCallback('connected', () => console.log('👋'))
   .setChildElement(span)
   .build();

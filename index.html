@@ -100,7 +100,7 @@
       new WebComponentFactory()
         .getComponentBuilder('welcome-message')
         .setMode('open')
-        .setAttribute('text', { value: 'Default message', observed: true })
+        .setAttribute('text', 'Default message')
         .setLifecycleCallback('connected', () => console.log('👋'))
         .setChildElement(span)
         .build();
