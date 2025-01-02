@@ -519,5 +519,27 @@ describe('WebComponentFactory', () => {
       welcomeText.setAttribute('age', '50');
       await screen.findByShadowText('Welcome Andy! I hear you are 50 years old.');
     });
+
+    it('should observe and ignore an attribute', () => {
+      const factory = new WebComponentFactory();
+      factory.setAttribute('name', 'NAME MISSING');
+      factory.ignoreAttribute('name');
+
+      expect(
+        factory.dynamicAttributes.observedAttributes.find((a) => a === 'name'),
+      ).toBeUndefined();
+
+      factory.observeAttribute('name');
+
+      expect(
+        factory.dynamicAttributes.observedAttributes.find((a) => a === 'name'),
+      ).not.toBeUndefined();
+    });
+
+    it('should throw when attribute name is empty', () => {
+      expect(() => new WebComponentFactory().ignoreAttribute('')).toThrow(
+        'A non-empty "name" is required',
+      );
+    });
   });
 });

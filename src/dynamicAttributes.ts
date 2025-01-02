@@ -56,7 +56,7 @@ export class DynamicAttributes {
   private _get = (name: string): Attribute => {
     const attribute = this._attributes.get(name);
     if (!attribute) {
-      throw new Error(`Could not find attribute with name: "${name}`);
+      throw new Error(`Could not find attribute with name: "${name}".`);
     }
 
     return attribute;
